@@ -33,6 +33,12 @@ class B38Preprocessor(object):
 
     def __init__(self, dest_dir):
         self.dest_dir = dest_dir
+        self.logdir = os.path.join(self.dest_dir, 'log')
+        try:
+            os.makedirs(self.logdir)
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                raise
 
     def __call__(self, target_dir):
         # do some STUFF
@@ -61,9 +67,16 @@ class B38Preprocessor(object):
                             break_multiple=1000000
                             )
                     cmdline = cmd(gvcf, output_gzvcf)
+                    stdout_dir = os.path.join(self.logdir, d.sample_name())
+                    try:
+                        os.makedirs(stdout_dir)
+                    except OSError as e:
+                        if e.errno != errno.EEXIST:
+                            raise
+                    stdout = os.path.join(stdout_dir, new_gzvcf + '.log')
                     l = LsfJob({
                         'memory_in_gb': 5,
-                        'email': 'delarson@wustl.edu',
+                        'stdout': stdout,
                         'queue': 'research-hpc',
                         'docker': 'registry.gsc.wustl.edu/genome/genome_perl_environment:23',
                         })
@@ -134,8 +147,8 @@ class RewriteGvcfCmd(object):
         return self.cmd.format(input=input_file, output=output_file, temp_output=temp_output)
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Pre-process LIMS build38 realignment directory gvcfs')
-    parser.add_argument('directories', metavar='DIR', nargs='+', help='LIMS output directories to process')
+    parser = argparse.ArgumentParser(description='Pre-process LIMS build38 realignment directory gvcfs', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('directories', metavar='<DIR>', nargs='+', help='LIMS output directories to process')
     parser.add_argument('--output-dir', metavar='<DIR>', default='/gscmnt/gc2758/analysis/ccdg/data', help='output directory to place processed gvcfs within a directory for the sample.')
     args = parser.parse_args()
     preprocessor = B38Preprocessor(args.output_dir)

@@ -11,7 +11,8 @@ class BsubOption(object):
 
 class BsubEmailOption(BsubOption):
     def __call__(self, option_dict):
-        return ['-N'] + super(BsubEmailOption, self).__call__(option_dict)
+        if self.key in option_dict:
+            return ['-N'] + super(BsubEmailOption, self).__call__(option_dict)
 
 class BsubMemoryOption(BsubOption):
     def __init__(self):
