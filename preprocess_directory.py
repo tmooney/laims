@@ -102,9 +102,7 @@ class GVCFShortcutter(object):
     def input_md5_gvcfs(self):
         md5s = dict()
         for filepath in self.input_directory.all_gvcf_files():
-            print filepath
             filename = os.path.basename(filepath)
-            print filename
             md5s[filename] = utils.md5_checksum(filepath)
         return md5s
 
