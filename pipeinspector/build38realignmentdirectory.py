@@ -115,3 +115,19 @@ class Build38RealignmentDirectory(object):
 
     def qc_yaml_file(self):
         return os.path.join(self.path, 'qc_metrics.yaml')
+    
+    def picard_alignment_metrics_file(self):
+        return os.path.join(self.path, 'alignment_summary.txt')
+
+    def picard_mark_duplicates_metrics_file(self):
+        return os.path.join(self.path, 'mark_dups_metrics.txt')
+
+    def picard_wgs_metrics_file(self):
+        return os.path.join(self.path, 'wgs_metric_summary.txt')
+
+    def picard_gc_bias_metrics_file(self):
+        return os.path.join(self.path, 'GC_bias_summary.txt')
+
+    def verifybamid_self_sample_file(self):
+        return os.path.join(self.path, 'verify_bam_id.selfSM') 
+
