@@ -31,9 +31,10 @@ class B38DirectoryValidator(object):
 
 class B38Preprocessor(object):
 
-    def __init__(self, dest_dir):
+    def __init__(self, dest_dir, job_runner):
         self.dest_dir = dest_dir
         self.logdir = os.path.join(self.dest_dir, 'log')
+        self.lsf_job_runner = job_runner
         try:
             os.makedirs(self.logdir)
         except OSError as e:
@@ -74,14 +75,11 @@ class B38Preprocessor(object):
                         if e.errno != errno.EEXIST:
                             raise
                     stdout = os.path.join(stdout_dir, new_gzvcf + '.log')
-                    l = LsfJob({
-                        'memory_in_gb': 5,
-                        'stdout': stdout,
-                        'queue': 'research-hpc',
-                        'docker': 'registry.gsc.wustl.edu/genome/genome_perl_environment:23',
-                        })
-                    print l.dry_run(cmdline, {})
-                    l.launch(cmdline, {})
+                    lsf_options = {
+                            'stdout': stdout,
+                            }
+                    print self.lsf_job_runner.dry_run(cmdline, lsf_options) 
+                    self.lsf_job_runner.launch(cmdline, lsf_options)
         else:
             print 'Invalid for processing'
 
@@ -148,7 +146,16 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Pre-process LIMS build38 realignment directory gvcfs', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('directories', metavar='<DIR>', nargs='+', help='LIMS output directories to process')
     parser.add_argument('--output-dir', metavar='<DIR>', default='/gscmnt/gc2758/analysis/ccdg/data', help='output directory to place processed gvcfs within a directory for the sample.')
+    parser.add_argument('--job-group', metavar='<STR>', help='LSF job group for submitted jobs')
     args = parser.parse_args()
-    preprocessor = B38Preprocessor(args.output_dir)
+    default_job_options = {
+        'memory_in_gb': 5,
+        'queue': 'research-hpc',
+        'docker': 'registry.gsc.wustl.edu/genome/genome_perl_environment:23',
+        }
+    if args.job_group is not None:
+        default_job_options['group'] = args.job_group
+
+    preprocessor = B38Preprocessor(args.output_dir, job_runner=LsfJob(default_job_options))
     for d in args.directories:
         preprocessor(d)
