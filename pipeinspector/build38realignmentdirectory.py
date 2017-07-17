@@ -6,6 +6,29 @@ import yaml
 import json
 import re
 
+class CramFile(object):
+    def __init__(self, cram, samtools_path='/gscmnt/gc2802/halllab/ccdg_resources/bin/samtools-1.3.1'):
+        self.cram = cram
+        self.samtools_path = samtools_path
+
+    @staticmethod
+    def is_readgroup(string):
+        return string.startswith('@RG')
+
+    @staticmethod
+    def sm_tag_for_readgroup_string(rg_string):
+        sm_match = re.search(r'SM:(\S+)', rg_string)
+        return sm_match.group(1)
+
+    def sm_tag(self):
+        header = os.popen('{samtools} view -H {cram}'.format(samtools=self.samtools_path, cram=self.cram))
+        samples = set()
+        for line in header:
+            if self.is_readgroup(line):
+                samples.add(self.sm_tag_for_readgroup_string(line))
+        assert(len(samples) == 1)
+        return samples.pop()
+
 class InputJson(object):
     def __init__(self, input_json):
         with open(input_json) as json_file:
@@ -49,6 +72,7 @@ class Build38RealignmentDirectory(object):
         self.output_file_dict = None
         self.is_complete = None
         self._completion_time = None
+        self._sm_tag = None
         assert os.path.isdir(self.path)
 
     def _collect_output_file_dict(self):
@@ -68,6 +92,7 @@ class Build38RealignmentDirectory(object):
             for glob_string, num_expected in Build38RealignmentDirectory._expectations.iteritems():
                 if not num_expected == len(self.output_file_dict[glob_string]):
                     self.is_complete = False
+                    sys.stderr.write("Missing files matching {0}\n".format(glob_string))
                     return self.is_complete
             self.is_complete = True
             return self.is_complete
@@ -79,12 +104,15 @@ class Build38RealignmentDirectory(object):
             return 'incomplete'
 
     def completion_time(self):
-        if self._completion_time is not None:
-            return self._completion_time
-        else:
+        if self._completion_time is None:
             if self.is_complete and self.output_file_dict is not None:
                 self._completion_time = max([os.path.getmtime(x) for sublist in self.output_file_dict.itervalues() for x in sublist])
-            return self._completion_time
+        return self._completion_time
+
+    def sm_tag(self):
+        if self._sm_tag is None:
+            self._sm_tag = CramFile(self.cram_file()).sm_tag()
+        return self._sm_tag
 
     def cram_file(self):
         if self.output_file_dict is None:
