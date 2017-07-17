@@ -6,7 +6,7 @@ import os
 import errno
 import argparse
 
-from pipeinspector.build38realignmentdirectory import Build38RealignmentDirectory, InputJson
+from pipeinspector.build38realignmentdirectory import Build38RealignmentDirectory, InputJson, CramFile
 from pipeinspector.flagstat import Flagstat
 from pipeinspector.limsdatabase import ReadCountInDb
 import pipeinspector.utils as utils
@@ -24,10 +24,20 @@ class B38DirectoryValidator(object):
         unaligned_total = self.counter(seqids)
         flagstat = Flagstat(self.directory.flagstat_file())
         aligned_total = flagstat.read1 + flagstat.read2
-        return aligned_total == unaligned_total
+        rv = aligned_total == unaligned_total
+        if not rv:
+            sys.stderr.write("Aligned total bp doesn't match unaligned total bp\n")
+        return rv
+
+    def sm_tag_ok(self):
+        sm_tag = self.directory.sm_tag()
+        rv = not sm_tag.startswith('H_')
+        if not rv:
+            sys.stderr.write("SM tag starts with H_\n")
+        return rv
 
     def valid_directory(self):
-        return self.directory.complete() and self.readcount_ok()
+        return self.directory.complete() and self.readcount_ok() and self.sm_tag_ok()
 
 class B38Preprocessor(object):
 
