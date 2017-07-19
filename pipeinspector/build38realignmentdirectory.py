@@ -119,6 +119,10 @@ class Build38RealignmentDirectory(object):
             self._collect_output_file_dict()
         return self.output_file_dict['*.cram'][0]
 
+    def cram_files(self):
+        cram_file = self.cram_file()
+        return (cram_file, cram_file + '.crai')
+
     def sample_name(self):
         cram_file = self.cram_file()
         filename = os.path.basename(cram_file)
