@@ -69,6 +69,6 @@ class LsfJob(object):
         return self.bsub_cmd(cmd, cmd_options)
 
     def launch(self, cmd, cmd_options):
-        print self._construct_cmd(cmd, cmd_options)
+        print self.dry_run(cmd, cmd_options)
         proc = subprocess.call(self._construct_cmd(cmd, cmd_options))
 
