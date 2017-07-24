@@ -52,6 +52,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='ingest LIMS build38 realignment compute_workflow_execution csv', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('csv', metavar='<FILE>', help='LIMS csv')
     parser.add_argument('--output-dir', metavar='<DIR>', default='/gscmnt/gc2758/analysis/ccdg/data', help='output directory to place processed gvcfs within a directory for the sample.')
+    parser.add_argument('--job-group', metavar='<STR>', help='LSF job group for submitted jobs')
     parser.add_argument('--qc-map', metavar='<FILE>', help='QC sample map')
     parser.add_argument('--output-json', metavar='<FILE>', help='json file of ingest information')
     #parser.add_argument('--dry-run', dest='dry_run', action='store_true', help='dry run, no jobs submitted')
