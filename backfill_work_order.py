@@ -43,8 +43,8 @@ class ComputeWorkflowSample(Base):
     ingest_date = Column(DateTime, default=datetime.datetime.utcnow)
 
 
-#db = create_engine('sqlite:///tracking.db')
-db = create_engine('sqlite:///test.db')
+db = create_engine('sqlite:///tracking.db')
+#db = create_engine('sqlite:///test.db')
 Base.metadata.create_all(db)
 Session = sessionmaker(bind=db)
 
@@ -94,13 +94,13 @@ if __name__ == '__main__':
             target_dir = Build38RealignmentDirectory(output_json['source_directory'])
             validator = B38DirectoryValidator(target_dir)
             outdir = preprocessor.output_directory(target_dir)
+            analysis_cram_path = outdir
+            analysis_gvcf_path = outdir
             is_valid = validator.valid_directory()
             # guess ingest date from md5 checksum
             md5_file = os.path.join(analysis_gvcf_path, '.gvcf_file_md5s.json')
             if os.path.exists(md5_file):
                 inferred_timestamp = putils.file_mtime(md5_file)
-                analysis_cram_path = outdir
-                analysis_gvcf_path = outdir
             else:
                 is_valid = False
 
