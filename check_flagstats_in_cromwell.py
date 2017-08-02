@@ -6,6 +6,8 @@ import os
 import re
 import csv
 
+from pipeinspector.flagstat import Flagstat
+
 def total_from_db(ids):
     total = 0
 
@@ -16,25 +18,6 @@ def total_from_db(ids):
     for row in reader:
         total += int(row[1])
     return total
-
-class Flagstat(object):
-    def __init__(self, file_path):
-        self.file_path = file_path
-        self._parse()
-
-    def _parse(self):
-        with open(self.file_path) as flagstat:
-            self._values = [int(x.split(' ')[0]) for x in flagstat]
-
-    @property
-    def read1(self):
-        """Number of read1 reads. Primary only."""
-        return self._values[6]
-
-    @property
-    def read2(self):
-        """Number of read2 reads. Primary only."""
-        return self._values[7]
 
 def id_for_readgroup_string(rg_string):
     # ID:\d+
