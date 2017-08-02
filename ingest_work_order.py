@@ -8,6 +8,7 @@ import datetime
 import json
 from preprocess_directory import B38Preprocessor
 from pipeinspector.lsf import LsfJob
+from pipeinspector.models import Base, ComputeWorkflowSample
 
 from sqlalchemy import Column, Text, Integer, Boolean, DateTime, UniqueConstraint
 from sqlalchemy.orm import relationship
@@ -16,33 +17,6 @@ import datetime
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
-Base = declarative_base()
-
-class ComputeWorkflowSample(Base):
-    
-    __tablename__ = 'csp_sample'
-    __table_args__ = (
-            UniqueConstraint('source_work_order', 'woi', 'source_directory', name='uniq_row'),
-            )
-    
-    id = Column(Integer, primary_key=True)
-    source_work_order = Column(Integer)
-    woi = Column(Integer)
-#    cohort = Column(Text)
-    ingest_sample_name = Column(Text, unique=True, nullable=False) #convenience. Could change in the LIMS 
-#    sm_tag_name = Column(Text)
-    source_directory = Column(Text, unique=True, nullable=False)
-    valid_source_directory = Column(Boolean)
-    passed_qc = Column(Boolean)
-    analysis_cram_path = Column(Text)
-    analysis_cram_verifyed = Column(Boolean)
-    analysis_gvcf_path = Column(Text)
-    analysis_gvcfs_verified = Column(Boolean)
-    analysis_sv_path = Column(Text)
-    analysis_sv_verified = Column(Boolean)
-    ingest_date = Column(DateTime, default=datetime.datetime.utcnow)
-
 
 db = create_engine('sqlite:///tracking.db')
 Base.metadata.create_all(db)

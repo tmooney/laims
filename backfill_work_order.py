@@ -6,8 +6,9 @@ import argparse
 import csv
 import datetime
 from preprocess_directory import B38DirectoryValidator, B38Preprocessor
-from pipeinspector.build38realignmentdirectory import Build38RealignmentDirectory 
+from pipeinspector.build38realignmentdirectory import Build38RealignmentDirectory
 import pipeinspector.utils as putils
+from pipeinspector.models import Base, ComputeWorkflowSample
 
 from sqlalchemy import Column, Text, Integer, Boolean, DateTime, UniqueConstraint
 from sqlalchemy.orm import relationship
@@ -15,33 +16,6 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
-Base = declarative_base()
-
-class ComputeWorkflowSample(Base):
-    
-    __tablename__ = 'csp_sample'
-    __table_args__ = (
-            UniqueConstraint('source_work_order', 'woi', 'source_directory', name='uniq_row'),
-            )
-    
-    id = Column(Integer, primary_key=True)
-    source_work_order = Column(Integer)
-    woi = Column(Integer)
-#    cohort = Column(Text)
-    ingest_sample_name = Column(Text, unique=True, nullable=False) #convenience. Could change in the LIMS 
-#    sm_tag_name = Column(Text)
-    source_directory = Column(Text, unique=True, nullable=False)
-    valid_source_directory = Column(Boolean)
-    passed_qc = Column(Boolean)
-    analysis_cram_path = Column(Text)
-    analysis_cram_verifyed = Column(Boolean)
-    analysis_gvcf_path = Column(Text)
-    analysis_gvcfs_verified = Column(Boolean)
-    analysis_sv_path = Column(Text)
-    analysis_sv_verified = Column(Boolean)
-    ingest_date = Column(DateTime, default=datetime.datetime.utcnow)
-
 
 db = create_engine('sqlite:///tracking.db')
 #db = create_engine('sqlite:///test.db')
@@ -122,4 +96,3 @@ if __name__ == '__main__':
                 sys.stderr.write('Loaded {0}\n'.format(output_json['ingest_sample_name']))
             else:
                 sys.stderr.write('{0} is invalid and will not be loaded\n'.format(output_json['ingest_sample_name']))
-
