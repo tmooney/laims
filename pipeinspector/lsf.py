@@ -1,5 +1,6 @@
 import subprocess
 
+
 class BsubOption(object):
     def __init__(self, key, option_flag):
         self.key = key
@@ -9,10 +10,12 @@ class BsubOption(object):
         if self.key in option_dict:
             return [self.option_flag, option_dict[self.key]]
 
+
 class BsubEmailOption(BsubOption):
     def __call__(self, option_dict):
         if self.key in option_dict:
             return ['-N'] + super(BsubEmailOption, self).__call__(option_dict)
+
 
 class BsubMemoryOption(BsubOption):
     def __init__(self):
@@ -20,17 +23,28 @@ class BsubMemoryOption(BsubOption):
 
     def __call__(self, option_dict):
         if self.key in option_dict:
-            resource_string = '\"select[mem>{memory}000] rusage[mem={memory}000]\"'.format(memory=option_dict[self.key])
-            memlimit = '{memory}000000'.format(memory=option_dict[self.key])
-            return ['-M', memlimit, '-R', resource_string]
+            resource_string = '\"select[mem>{mem}000] rusage[mem={mem}000]\"'
+            memlimit = '{mem}000000'
+            return [
+                '-M',
+                memlimit.format(mem=option_dict[self.key]),
+                '-R',
+                resource_string.format(mem=option_dict[self.key]),
+            ]
+
 
 class BsubDockerOption(BsubOption):
     def __init__(self):
         super(BsubDockerOption, self).__init__('docker', '-a')
+
     def __call__(self, option_dict):
         if self.key in option_dict:
-            docker_string = 'docker({registry})'.format(registry=option_dict[self.key])
-            return [self.option_flag, docker_string]
+            docker_string = 'docker({registry})'
+            return [
+                self.option_flag,
+                docker_string.format(registry=option_dict[self.key])
+                ]
+
 
 class LsfJob(object):
     available_options = (
@@ -54,8 +68,9 @@ class LsfJob(object):
         options.update(override_options)
         return self.bsub_options + reduce(
                 lambda x, y: x + y,
-                filter(lambda x: x is not None,
-                    [ x(options) for x in LsfJob.available_options ]
+                filter(
+                    lambda x: x is not None,
+                    [x(options) for x in LsfJob.available_options]
                     )
                 )
 
@@ -70,5 +85,4 @@ class LsfJob(object):
 
     def launch(self, cmd, cmd_options):
         print self.dry_run(cmd, cmd_options)
-        proc = subprocess.call(self._construct_cmd(cmd, cmd_options))
-
+        return subprocess.call(self._construct_cmd(cmd, cmd_options))
