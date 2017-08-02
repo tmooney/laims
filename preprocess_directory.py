@@ -13,6 +13,7 @@ from pipeinspector.limsdatabase import ReadCountInDb
 import pipeinspector.utils as utils
 from pipeinspector.lsf import LsfJob
 
+
 class B38DirectoryValidator(object):
 
     def __init__(self, directory):
@@ -40,6 +41,7 @@ class B38DirectoryValidator(object):
     def valid_directory(self):
         return self.directory.complete() and self.readcount_ok() and self.sm_tag_ok()
 
+
 class B38Preprocessor(object):
 
     def __init__(self, dest_dir, job_runner):
@@ -65,7 +67,7 @@ class B38Preprocessor(object):
             except OSError as e:
                 if e.errno != errno.EEXIST: #don't freak out if the directory exists
                     raise
-            
+
             stdout_dir = os.path.join(self.logdir, d.sample_name())
             try:
                 os.makedirs(stdout_dir)
@@ -112,6 +114,7 @@ class B38Preprocessor(object):
     def output_directory(self, d):
         return os.path.join(self.dest_dir, d.sample_name())
 
+
 class GVCFShortcutter(object):
     def __init__(self, input_directory, output_directory):
         self.output_directory = output_directory
@@ -122,7 +125,7 @@ class GVCFShortcutter(object):
     # NOTE Md5 keys should be basename, not full path
     def md5_json(self):
         return os.path.join(self.output_directory, '.gvcf_file_md5s.json')
-        
+
     def input_md5_gvcfs(self):
         md5s = dict()
         for filepath in self.input_directory.all_gvcf_files():
@@ -140,7 +143,7 @@ class GVCFShortcutter(object):
             with open(json_file, 'w') as output:
                 json.dump(md5s, output)
             return md5s
-    
+
     def can_shortcut(self, input_file, output_file):
         filename = os.path.basename(input_file)
         input_md5 = self.input_md5s[filename]
@@ -153,7 +156,7 @@ class GVCFShortcutter(object):
         else:
             return False
 
-# This should be a callable class that gives back cmd lines
+
 class RewriteGvcfCmd(object):
     def __init__(self, java, max_mem, max_stack, gatk_jar, reference, break_multiple):
         self.cmd = '{java} -Xmx{max_mem} -Xms{max_stack} -jar {gatk_jar} -T CombineGVCFs -R {ref} --breakBandsAtMultiplesOf {break_multiple} -V {{input}} -o {{temp_output}} && mv {{temp_output}} {{output}} && mv {{temp_output}}.tbi {{output}}.tbi'.format(
@@ -164,9 +167,11 @@ class RewriteGvcfCmd(object):
                 ref=str(reference),
                 break_multiple=str(break_multiple),
                 )
+
     def __call__(self, input_file, output_file):
         temp_output = output_file + '.tmp.vcf.gz'
         return self.cmd.format(input=input_file, output=output_file, temp_output=temp_output)
+
 
 class Shortcutter(object):
     def __init__(self, input_directory, output_directory, json_name, file_path_func):
@@ -180,10 +185,9 @@ class Shortcutter(object):
     # NOTE Md5 keys should be basename, not full path
     def _md5_json(self):
         return os.path.join(self.output_directory, self.json_name)
-        
+
     def _calc_input_md5s(self):
         md5s = dict()
-        #filepaths = (self.input_directory.cram_file(), self.input_directory.cram_file() + '.crai')
         for filepath in self.file_path_func(self.input_directory):
             filename = os.path.basename(filepath)
             if os.path.isfile(filepath + '.md5'):
@@ -203,7 +207,7 @@ class Shortcutter(object):
             with open(json_file, 'w') as output:
                 json.dump(md5s, output)
             return md5s
-    
+
     def can_shortcut(self, input_file, output_file):
         filename = os.path.basename(input_file)
         input_md5 = self._input_md5s[filename]
@@ -216,11 +220,13 @@ class Shortcutter(object):
         else:
             return False
 
+
 class RsyncCmd(object):
     def __init__(self):
         self.cmd = 'rsync --verbose --archive {input} {output_dir}/ && rsync --verbose --archive {input}.md5 {output_dir}/ && rsync --verbose --archive {input}.crai {output_dir}/'
     def __call__(self, input_file, output_dir):
         return self.cmd.format(input=input_file, output_dir=output_dir)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Pre-process LIMS build38 realignment directory gvcfs', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
