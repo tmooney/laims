@@ -1,12 +1,12 @@
 import glob
 import os
 import sys
-import hashlib
-import yaml
 import json
 import re
 
+
 class CramFile(object):
+
     def __init__(self, cram, samtools_path='/gscmnt/gc2802/halllab/ccdg_resources/bin/samtools-1.3.1'):
         self.cram = cram
         self.samtools_path = samtools_path
@@ -29,6 +29,7 @@ class CramFile(object):
         assert(len(samples) == 1)
         return samples.pop()
 
+
 class InputJson(object):
     def __init__(self, input_json):
         with open(input_json) as json_file:
@@ -45,7 +46,7 @@ class InputJson(object):
 
     def bams(self):
         return [ x[0] for x in self.json_data['sequence']['analysis']['data']]
-        
+
 
 class Build38RealignmentDirectory(object):
     _expectations = {
@@ -96,7 +97,7 @@ class Build38RealignmentDirectory(object):
                     return self.is_complete
             self.is_complete = True
             return self.is_complete
-    
+
     def status(self):
         if self.complete():
             return 'done'
@@ -147,7 +148,7 @@ class Build38RealignmentDirectory(object):
 
     def qc_yaml_file(self):
         return os.path.join(self.path, 'qc_metrics.yaml')
-    
+
     def picard_alignment_metrics_file(self):
         return os.path.join(self.path, 'alignment_summary.txt')
 
@@ -161,5 +162,4 @@ class Build38RealignmentDirectory(object):
         return os.path.join(self.path, 'GC_bias_summary.txt')
 
     def verifybamid_self_sample_file(self):
-        return os.path.join(self.path, 'verify_bam_id.selfSM') 
-
+        return os.path.join(self.path, 'verify_bam_id.selfSM')
