@@ -52,12 +52,12 @@ class AnalysisSvDirectory(object):
             )
     _lumpy_validator = DirectoryValidator(
             {
-                "*.cram.json": 1,
                 "*[!t].vcf": 1, # this may fail for samples that end in a lowercase t
             }
             )
     _svtyper_validator = DirectoryValidator(
             {
+                "*.cram.json": 1,
                 "*.gt.vcf": 1,
             }
             )
