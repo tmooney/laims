@@ -175,7 +175,7 @@ def get_cram ( path ):
 
 with open( args.file ) as csvfile, open( out_all, 'w' ) as outfile: 
 
-    reader = csv.DictReader( csvfile, delimiter="\t" )
+    reader = csv.DictReader( csvfile, delimiter="," )
 
     header_fields = input_fields + cram_header + yaml_fields + pair_header + cromwell +fail_header 
     w = csv.DictWriter( outfile, header_fields, delimiter="\t" )
