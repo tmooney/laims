@@ -74,10 +74,10 @@ def get_yaml( path ):
         fail_met = []
         for yamlv in yaml_values:
 
-            if (args.dir):
-                results[ 'PF_HQ_ALIGNED_Q20_BASES' ] = yamlv[ 'PF_HQ_ALIGNED_Q20_BASES' ]
-            else:
-                results[ 'PF_HQ_ALIGNED_Q20_BASES' ] = yamlv[ 'PAIR' ][ 'PF_HQ_ALIGNED_Q20_BASES' ]
+            #if (args.dir):
+            #    results[ 'PF_HQ_ALIGNED_Q20_BASES' ] = yamlv[ 'PF_HQ_ALIGNED_Q20_BASES' ]
+            #else:
+            #    results[ 'PF_HQ_ALIGNED_Q20_BASES' ] = yamlv[ 'PAIR' ][ 'PF_HQ_ALIGNED_Q20_BASES' ]
 
             if( args.ccdg ):
                 if ( yamlv[ 'FREEMIX' ] < 0.05 and yamlv[ 'HAPLOID_COVERAGE' ] >= 19.5 and yamlv[ 'discordant_rate' ] < 5
