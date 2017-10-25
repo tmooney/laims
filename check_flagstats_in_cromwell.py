@@ -12,11 +12,12 @@ def total_from_db(ids):
     total = 0
 
     id_string = ','.join(ids)
-    sql = 'sqlrun "select seq_id, filt_clusters * 2 from index_illumina where seq_id in ({0})" --instance warehouse --parse'.format(id_string)
+    sql = 'sqlrun "select seq_id, filt_clusters * 2 from index_illumina where seq_id in ({0})" --parse'.format(id_string)
+    print sql
     output = os.popen(sql)
     reader = csv.reader(output, delimiter='\t')
     for row in reader:
-        total += int(row[1])
+        total += int(float(row[1]))
     return total
 
 def id_for_readgroup_string(rg_string):

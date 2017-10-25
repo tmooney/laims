@@ -62,6 +62,7 @@ if __name__ == '__main__':
                 sys.stderr.write('Duplicate row with identical source directory, sample name and workorder. Skipping...\n')
                 continue
             else:
+                
                 seen.add(seen_key)
 
             outdir = preprocessor(output_json['source_directory'])
