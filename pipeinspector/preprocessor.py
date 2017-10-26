@@ -1,45 +1,9 @@
-#!/usr/bin/env python
-
-import sys
 import json
 import os
 import os.path
 import errno
-import argparse
-
-from pipeinspector.build38realignmentdirectory import Build38RealignmentDirectory, InputJson, CramFile
-from pipeinspector.flagstat import Flagstat
-from pipeinspector.limsdatabase import ReadCountInDb
+from pipeinspector.build38realignmentdirectory import Build38RealignmentDirectory, B38DirectoryValidator
 import pipeinspector.utils as utils
-from pipeinspector.lsf import LsfJob
-
-
-class B38DirectoryValidator(object):
-
-    def __init__(self, directory):
-        self.counter = ReadCountInDb()
-        self.directory = directory
-
-    def readcount_ok(self):
-        input_json = InputJson(self.directory.input_json())
-        seqids = input_json.seqids()
-        unaligned_total = self.counter(seqids)
-        flagstat = Flagstat(self.directory.flagstat_file())
-        aligned_total = flagstat.read1 + flagstat.read2
-        rv = aligned_total == unaligned_total
-        if not rv:
-            sys.stderr.write("Aligned total bp doesn't match unaligned total bp\n")
-        return rv
-
-    def sm_tag_ok(self):
-        sm_tag = self.directory.sm_tag()
-        rv = not sm_tag.startswith('H_')
-        if not rv:
-            sys.stderr.write("SM tag starts with H_\n")
-        return rv
-
-    def valid_directory(self):
-        return self.directory.complete() and self.readcount_ok() and self.sm_tag_ok()
 
 
 class B38Preprocessor(object):
@@ -65,7 +29,8 @@ class B38Preprocessor(object):
             try:
                 os.makedirs(outdir)
             except OSError as e:
-                if e.errno != errno.EEXIST: #don't freak out if the directory exists
+                # Don't freak out if the directory exists
+                if e.errno != errno.EEXIST:
                     raise
 
             stdout_dir = os.path.join(self.logdir, d.sample_name())
@@ -75,7 +40,8 @@ class B38Preprocessor(object):
                 if e.errno != errno.EEXIST:
                     raise
 
-            # always submit a CRAM transfer because we use rsync and it checks these things...
+            # always submit a CRAM transfer because we use rsync
+            # and it checks these things...
             copy_stdout = os.path.join(stdout_dir, 'cram_copy.log')
             cram_shortcutter = Shortcutter(d, outdir, '.cram_file_md5s.json', lambda x: x.cram_files())
             cram, crai = d.cram_files()
@@ -85,7 +51,7 @@ class B38Preprocessor(object):
             if not (cram_shortcutter.can_shortcut(cram, output_cram) and cram_shortcutter.can_shortcut(crai, output_crai)):
                 cram_copy_cmd = RsyncCmd()
                 cram_copy_cmdline = cram_copy_cmd(d.cram_file(), outdir)
-                self.lsf_job_runner.launch(cram_copy_cmdline, { 'stdout': copy_stdout })
+                self.lsf_job_runner.launch(cram_copy_cmdline, {'stdout': copy_stdout})
 
             shortcutter = GVCFShortcutter(d, outdir)
             for gvcf in d.all_gvcf_files():
@@ -224,25 +190,6 @@ class Shortcutter(object):
 class RsyncCmd(object):
     def __init__(self):
         self.cmd = 'rsync --verbose --archive {input} {output_dir}/ && rsync --verbose --archive {input}.md5 {output_dir}/ && rsync --verbose --archive {input}.crai {output_dir}/'
+
     def __call__(self, input_file, output_dir):
         return self.cmd.format(input=input_file, output_dir=output_dir)
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Pre-process LIMS build38 realignment directory gvcfs', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('directories', metavar='<DIR>', nargs='+', help='LIMS output directories to process')
-    parser.add_argument('--output-dir', metavar='<DIR>', default='/gscmnt/gc2758/analysis/ccdg/data', help='output directory to place processed gvcfs within a directory for the sample.')
-    parser.add_argument('--job-group', metavar='<STR>', help='LSF job group for submitted jobs')
-    #parser.add_argument('--dry-run', dest='dry_run', action='store_true', help='dry run, no jobs submitted')
-    args = parser.parse_args()
-    default_job_options = {
-        'memory_in_gb': 5,
-        'queue': 'research-hpc',
-        'docker': 'registry.gsc.wustl.edu/genome/genome_perl_environment:23',
-        }
-    if args.job_group is not None:
-        default_job_options['group'] = args.job_group
-
-    preprocessor = B38Preprocessor(args.output_dir, job_runner=LsfJob(default_job_options))
-    for d in args.directories:
-        preprocessor(d)
