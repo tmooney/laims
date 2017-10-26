@@ -1,7 +1,7 @@
 from directoryvalidation import DirectoryValidator
 
 import sys
-
+import os.path
 
 class AnalysisDirectory(object):
 
@@ -97,3 +97,82 @@ class AnalysisSvDirectory(object):
 
     def svtyper_complete(self):
         return self.validate_stage(AnalysisSvDirectory._svtyper_validator, self.svtyper_file_dict)
+
+
+class QcDirectory(object):
+    _validator = DirectoryValidator(
+        {
+            "X_chrom*": 2,
+            "all_chrom*": 2,
+            "bamutil_stats.txt": 1,
+            "flagstat.out": 1,
+            "insert_size*": 2,
+            "mark_dups_metrics.txt": 1,
+            "verify_bam_id*": 4,
+            "wgs_metric_summary.txt": 1,
+            "alignment_summary.txt": 1,
+            "GC_bias*": 3,
+        }
+    )
+
+    def __init__(self, directory_path):
+        self.path = directory_path
+
+    def flagstat_file(self):
+        if self.output_file_dict is None:
+            self._collect_output_file_dict()
+        return self.output_file_dict['flagstat.out'][0]
+
+    def qc_yaml_file(self):
+        return os.path.join(self.path, 'qc_metrics.yaml')
+
+    def picard_alignment_metrics_file(self):
+        return os.path.join(self.path, 'alignment_summary.txt')
+
+    def picard_mark_duplicates_metrics_file(self):
+        return os.path.join(self.path, 'mark_dups_metrics.txt')
+
+    def picard_wgs_metrics_file(self):
+        return os.path.join(self.path, 'wgs_metric_summary.txt')
+
+    def picard_gc_bias_metrics_file(self):
+        return os.path.join(self.path, 'GC_bias_summary.txt')
+
+    def picard_gc_bias_output_file(self):
+        return os.path.join(self.path, 'GC_bias.txt')
+
+    def picard_gc_bias_chart(self):
+        return os.path.join(self.path, 'GC_bias_chart.pdf')
+
+    def picard_insert_size_metrics_file(self):
+        return os.path.join(self.path, 'insert_size_summary.txt')
+
+    def picard_insert_size_chart(self):
+        return os.path.join(self.path, 'insert_size.pdf')
+
+    def verifybamid_self_sample_file(self):
+        return os.path.join(self.path, 'verify_bam_id.selfSM')
+
+    def verifybamid_self_readgroup_file(self):
+        return os.path.join(self.path, 'verify_bam_id.selfRG')
+
+    def verifybamid_depth_sample_file(self):
+        return os.path.join(self.path, 'verify_bam_id.depthSM')
+
+    def verifybamid_depth_readgroup_file(self):
+        return os.path.join(self.path, 'verify_bam_id.depthRG')
+
+    def bamutil_file(self):
+        return os.path.join(self.path, 'bamutil_stats.txt')
+
+    def X_chrom_vc_detail_metrics(self):
+        return os.path.join(self.path, 'X_chrom.variant_calling_detail_metrics')
+
+    def X_chrom_vc_summary_metrics(self):
+        return os.path.join(self.path, 'X_chrom.variant_calling_summary_metrics')
+
+    def all_chrom_vc_detail_metrics(self):
+        return os.path.join(self.path, 'all.variant_calling_detail_metrics')
+
+    def all_chrom_vc_summary_metrics(self):
+        return os.path.join(self.path, 'all_chrom.variant_calling_summary_metrics')

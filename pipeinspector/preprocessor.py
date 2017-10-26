@@ -88,7 +88,14 @@ class B38Preprocessor(object):
                             }
                     self.lsf_job_runner.launch(cmdline, lsf_options)
             # Sync QC files
-            self._qc_files(d, outdir, stdout_dir)
+            qc_outdir = os.path.join(outdir, 'qc')
+            try:
+                os.makedirs(qc_outdir)
+            except OSError as e:
+                # Don't freak out if the directory exists
+                if e.errno != errno.EEXIST:
+                    raise
+            self._qc_files(d, qc_outdir, stdout_dir)
             return outdir
         else:
             print 'Invalid for processing'
