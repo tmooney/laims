@@ -1,5 +1,7 @@
 import glob
 import os.path
+from pipeinspector.limsdatabase import ReadCountInDb
+from pipeinspector.flagstat import Flagstat
 
 
 class DirectoryValidator(object):
@@ -44,3 +46,33 @@ class DirectoryValidator(object):
         return max([os.path.getmtime(x)
                     for sublist in output_file_dict.itervalues()
                     for x in sublist])
+
+
+# NOTE This is another type of directory validator
+# FIXME It should be harmonized with the class above
+class B38DirectoryValidator(object):
+
+    def __init__(self, directory):
+        self.counter = ReadCountInDb()
+        self.directory = directory
+
+    def readcount_ok(self):
+        input_json = InputJson(self.directory.input_json())
+        seqids = input_json.seqids()
+        unaligned_total = self.counter(seqids)
+        flagstat = Flagstat(self.directory.flagstat_file())
+        aligned_total = flagstat.read1 + flagstat.read2
+        rv = aligned_total == unaligned_total
+        if not rv:
+            sys.stderr.write("Aligned total bp doesn't match unaligned total bp\n")
+        return rv
+
+    def sm_tag_ok(self):
+        sm_tag = self.directory.sm_tag()
+        rv = not sm_tag.startswith('H_')
+        if not rv:
+            sys.stderr.write("SM tag starts with H_\n")
+        return rv
+
+    def valid_directory(self):
+        return self.directory.complete() and self.readcount_ok() and self.sm_tag_ok()
