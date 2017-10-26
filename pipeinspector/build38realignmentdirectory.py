@@ -161,5 +161,46 @@ class Build38RealignmentDirectory(object):
     def picard_gc_bias_metrics_file(self):
         return os.path.join(self.path, 'GC_bias_summary.txt')
 
+    def picard_gc_bias_output_file(self):
+        return os.path.join(self.path, 'GC_bias.txt')
+
+    def picard_gc_bias_chart(self):
+        return os.path.join(self.path, 'GC_bias_chart.pdf')
+
+    def picard_insert_size_metrics_file(self):
+        return os.path.join(self.path, 'insert_size_summary.txt')
+
+    def picard_insert_size_chart(self):
+        return os.path.join(self.path, 'insert_size.pdf')
+
     def verifybamid_self_sample_file(self):
         return os.path.join(self.path, 'verify_bam_id.selfSM')
+
+    def verifybamid_self_readgroup_file(self):
+        return os.path.join(self.path, 'verify_bam_id.selfRG')
+
+    def verifybamid_depth_sample_file(self):
+        return os.path.join(self.path, 'verify_bam_id.depthSM')
+
+    def verifybamid_depth_readgroup_file(self):
+        return os.path.join(self.path, 'verify_bam_id.depthRG')
+
+    def bamutil_file(self):
+        return os.path.join(self.path, 'bamutil_stats.txt')
+
+    def qc_files(self):
+        glob_strings = (
+            "X_chrom*",
+            "all_chrom*",
+            "bamutil_stats.txt",
+            "flagstat.out",
+            "insert_size*",
+            "mark_dups_metrics.txt",
+            "verify_bam_id*",
+            "wgs_metric_summary.txt",
+            "alignment_summary.txt",
+            "GC_bias*",
+            )
+        if self.output_file_dict is None:
+            self._collect_output_file_dict()
+        return [y for x in glob_strings for y in self.output_file_dict[x]]
