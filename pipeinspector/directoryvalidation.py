@@ -1,7 +1,9 @@
 import glob
+import sys
 import os.path
 from pipeinspector.limsdatabase import ReadCountInDb
 from pipeinspector.flagstat import Flagstat
+from pipeinspector.build38realignmentdirectory import InputJson
 
 
 class DirectoryValidator(object):
