@@ -36,11 +36,11 @@ if __name__ == '__main__':
                 cram_file = directory.output_file_dict['*.cram'][0]
                 filename = os.path.basename(cram_file)
                 sample_name = filename.split('.cram')[0]
-                
+
                 sv_directory = AnalysisSvDirectory(sample.analysis_sv_path)
                 complete = True
                 if not sv_directory.staging_complete():
-                   # stage directory
+                    # stage directory
                     try:
                         os.makedirs(sample.analysis_sv_path)
                     except OSError as e:
@@ -58,7 +58,7 @@ if __name__ == '__main__':
                             raise
                 os.chdir(sample.analysis_sv_path)
                 if not sv_directory.cnvnator_complete():
-                    #launch cnvnator
+                    # launch cnvnator
                     complete = False
                     print subprocess.check_output(['bash', '/gscuser/dlarson/src/internal-sv-pipeline/cnvnator_histogram.sh', filename])
                 if not sv_directory.extract_complete():
@@ -77,5 +77,3 @@ if __name__ == '__main__':
                 if complete:
                     sys.stderr.write("{0} complete\n".format(sample_name))
         session.close()
-
-
