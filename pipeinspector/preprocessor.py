@@ -2,7 +2,8 @@ import json
 import os
 import os.path
 import errno
-from pipeinspector.build38realignmentdirectory import Build38RealignmentDirectory, B38DirectoryValidator
+from pipeinspector.build38realignmentdirectory import Build38RealignmentDirectory
+from pipeinspector.directoryvalidation import B38DirectoryValidator
 from pipeinspector.shortcutter import Shortcutter
 import pipeinspector.utils as utils
 
