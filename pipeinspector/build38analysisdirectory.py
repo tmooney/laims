@@ -2,6 +2,7 @@ from directoryvalidation import DirectoryValidator
 
 import sys
 
+
 class AnalysisDirectory(object):
 
     _validator = DirectoryValidator(
@@ -27,6 +28,7 @@ class AnalysisDirectory(object):
         if self.is_complete:
             self._completion_time = AnalysisDirectory._validator.completion_time(self.path, self.is_complete, self.output_file_dict)
 
+
 class AnalysisSvDirectory(object):
     _staging_validator = DirectoryValidator(
             {
@@ -37,8 +39,8 @@ class AnalysisSvDirectory(object):
 
     _extract_validator = DirectoryValidator(
             {
-                "*.discordants.bam": 1, 
-                "*.discordants.bam.bai": 1, 
+                "*.discordants.bam": 1,
+                "*.discordants.bam.bai": 1,
                 "*.splitters.bam": 1,
                 "*.splitters.bam.bai": 1,
             }
@@ -52,7 +54,7 @@ class AnalysisSvDirectory(object):
             )
     _lumpy_validator = DirectoryValidator(
             {
-                "*[!t].vcf": 1, # this may fail for samples that end in a lowercase t
+                "*[!t].vcf": 1,  # this may fail for samples that end in a lowercase t
             }
             )
     _svtyper_validator = DirectoryValidator(
@@ -61,7 +63,6 @@ class AnalysisSvDirectory(object):
                 "*.gt.vcf": 1,
             }
             )
-
 
     def __init__(self, directory_path):
         self.path = directory_path
