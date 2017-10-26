@@ -188,6 +188,18 @@ class Build38RealignmentDirectory(object):
     def bamutil_file(self):
         return os.path.join(self.path, 'bamutil_stats.txt')
 
+    def X_chrom_vc_detail_metrics(self):
+        return os.path.join(self.path, 'X_chrom.variant_calling_detail_metrics')
+
+    def X_chrom_vc_summary_metrics(self):
+        return os.path.join(self.path, 'X_chrom.variant_calling_summary_metrics')
+
+    def all_chrom_vc_detail_metrics(self):
+        return os.path.join(self.path, 'all.variant_calling_detail_metrics')
+
+    def all_chrom_vc_summary_metrics(self):
+        return os.path.join(self.path, 'all_chrom.variant_calling_summary_metrics')
+
     def qc_files(self):
         glob_strings = (
             "X_chrom*",
