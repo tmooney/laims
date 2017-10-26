@@ -19,6 +19,20 @@ class B38Preprocessor(object):
             if e.errno != errno.EEXIST:
                 raise
 
+    def _qc_files(self, d, outdir, stdout_dir):
+        stdout = os.path.join(stdout_dir, 'qc_file_copy.log')
+        qc_shortcutter = Shortcutter(d, outdir, '.qc_file_md5s.json', lambda x: x.qc_files())
+        files = d.qc_files()
+        copy_cmd = GenericRsyncCmd()
+        files_to_copy = list()
+        for f in files:
+            filename = os.path.basename(f)
+            outfile = os.path.join(outdir, filename)
+            if not (qc_shortcutter.can_shortcut(f, outfile)):
+                files_to_copy.append(f)
+        copy_cmdline = copy_cmd(files_to_copy, outdir)
+        self.lsf_job_runner.launch(copy_cmdline, {'stdout': stdout})
+
     def __call__(self, target_dir):
         # do some STUFF
         d = Build38RealignmentDirectory(target_dir)
@@ -73,6 +87,8 @@ class B38Preprocessor(object):
                             'stdout': stdout,
                             }
                     self.lsf_job_runner.launch(cmdline, lsf_options)
+            # Sync QC files
+            self._qc_files(d, outdir, stdout_dir)
             return outdir
         else:
             print 'Invalid for processing'
@@ -140,6 +156,12 @@ class RewriteGvcfCmd(object):
         return self.cmd.format(input=input_file, output=output_file, temp_output=temp_output)
 
 
+class GenericRsyncCmd(object):
+    def __init__(self):
+        self.cmd = 'rsync --verbose --archive {input} {output_dir}/'
+
+    def __call__(self, input_files, output_dir):
+        return self.cmd.format(input=' '.join(input_files), output_dir=output_dir)
 
 
 class RsyncCmd(object):
