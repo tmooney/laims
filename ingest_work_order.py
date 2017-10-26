@@ -3,17 +3,9 @@
 import sys
 import argparse
 import csv
-import dataset
-import datetime
-import json
-from preprocess_directory import B38Preprocessor
+from pipeinspector.preprocessor import B38Preprocessor
 from pipeinspector.lsf import LsfJob
 from pipeinspector.models import Base, ComputeWorkflowSample
-
-from sqlalchemy import Column, Text, Integer, Boolean, DateTime, UniqueConstraint
-from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
-import datetime
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -29,7 +21,6 @@ if __name__ == '__main__':
     parser.add_argument('--job-group', metavar='<STR>', help='LSF job group for submitted jobs')
     parser.add_argument('--qc-map', metavar='<FILE>', help='QC sample map')
     parser.add_argument('--output-json', metavar='<FILE>', help='json file of ingest information')
-    #parser.add_argument('--dry-run', dest='dry_run', action='store_true', help='dry run, no jobs submitted')
     args = parser.parse_args()
 
     default_job_options = {
@@ -42,15 +33,12 @@ if __name__ == '__main__':
 
     preprocessor = B38Preprocessor(args.output_dir, job_runner=LsfJob(default_job_options))
 
-    # TODO validate using logic from pre-process
     columns = {'Compute Workflow Execution': 'compute_workflow_execution', 'Work Order': 'work_order', 'DNA': 'ingest_sample_name', 'WOI': 'woi', 'Working Directory': 'source_directory'}
     seen = set()
     with open(args.csv) as f:
         reader = csv.DictReader(f, delimiter=',')
         for row in reader:
             output_json = dict()
-            #ingest_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            #output_json['ingest_date'] = ingest_time
             for key in columns:
                 output_json[columns[key]] = row[key]
             seen_key = (
@@ -62,7 +50,6 @@ if __name__ == '__main__':
                 sys.stderr.write('Duplicate row with identical source directory, sample name and workorder. Skipping...\n')
                 continue
             else:
-                
                 seen.add(seen_key)
 
             outdir = preprocessor(output_json['source_directory'])
