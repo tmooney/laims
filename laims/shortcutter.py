@@ -1,6 +1,6 @@
 import os.path
 import json
-from pipeinspector import utils
+from laims import utils
 
 
 class Shortcutter(object):

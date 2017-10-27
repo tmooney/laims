@@ -2,10 +2,10 @@ import json
 import os
 import os.path
 import errno
-from pipeinspector.build38realignmentdirectory import Build38RealignmentDirectory
-from pipeinspector.directoryvalidation import B38DirectoryValidator
-from pipeinspector.shortcutter import Shortcutter
-import pipeinspector.utils as utils
+from laims.build38realignmentdirectory import Build38RealignmentDirectory
+from laims.directoryvalidation import B38DirectoryValidator
+from laims.shortcutter import Shortcutter
+import laims.utils as utils
 
 
 class B38Preprocessor(object):
@@ -59,37 +59,37 @@ class B38Preprocessor(object):
 
             # always submit a CRAM transfer because we use rsync
             # and it checks these things...
-            copy_stdout = os.path.join(stdout_dir, 'cram_copy.log')
-            cram_shortcutter = Shortcutter(d, outdir, '.cram_file_md5s.json', lambda x: x.cram_files())
-            cram, crai = d.cram_files()
-            new_cram = os.path.basename(cram)
-            output_cram = os.path.join(outdir, new_cram)
-            output_crai = output_cram + '.crai'
-            if not (cram_shortcutter.can_shortcut(cram, output_cram) and cram_shortcutter.can_shortcut(crai, output_crai)):
-                cram_copy_cmd = RsyncCmd()
-                cram_copy_cmdline = cram_copy_cmd(d.cram_file(), outdir)
-                self.lsf_job_runner.launch(cram_copy_cmdline, {'stdout': copy_stdout})
+            #copy_stdout = os.path.join(stdout_dir, 'cram_copy.log')
+            #cram_shortcutter = Shortcutter(d, outdir, '.cram_file_md5s.json', lambda x: x.cram_files())
+            #cram, crai = d.cram_files()
+            #new_cram = os.path.basename(cram)
+            #output_cram = os.path.join(outdir, new_cram)
+            #output_crai = output_cram + '.crai'
+            #if not (cram_shortcutter.can_shortcut(cram, output_cram) and cram_shortcutter.can_shortcut(crai, output_crai)):
+            #    cram_copy_cmd = RsyncCmd()
+            #    cram_copy_cmdline = cram_copy_cmd(d.cram_file(), outdir)
+            #    self.lsf_job_runner.launch(cram_copy_cmdline, {'stdout': copy_stdout})
 
-            shortcutter = GVCFShortcutter(d, outdir)
-            for gvcf in d.all_gvcf_files():
-                new_gzvcf = os.path.basename(gvcf)
-                output_gzvcf = os.path.join(outdir, new_gzvcf)
-                if not shortcutter.can_shortcut(gvcf, output_gzvcf):
-                    cmd = RewriteGvcfCmd(
-                            java='/gapp/x64linux/opt/java/jdk/jdk1.8.0_60/bin/java',
-                            max_mem='3500M',
-                            max_stack='3500M',
-                            gatk_jar='/gscmnt/gc2802/halllab/ccdg_resources/lib/GenomeAnalysisTK-3.5-0-g36282e4.jar',
-                            reference='/gscmnt/gc2802/halllab/ccdg_resources/genomes/human/GRCh38DH/all_sequences.fa',
-                            break_multiple=1000000
-                            )
-                    cmdline = cmd(gvcf, output_gzvcf)
-                    stdout = os.path.join(stdout_dir, new_gzvcf + '.log')
-                    lsf_options = {
-                            'stdout': stdout,
-                            }
-                    self.lsf_job_runner.launch(cmdline, lsf_options)
-            # Sync QC files
+            #shortcutter = GVCFShortcutter(d, outdir)
+            #for gvcf in d.all_gvcf_files():
+            #    new_gzvcf = os.path.basename(gvcf)
+            #    output_gzvcf = os.path.join(outdir, new_gzvcf)
+            #    if not shortcutter.can_shortcut(gvcf, output_gzvcf):
+            #        cmd = RewriteGvcfCmd(
+            #                java='/gapp/x64linux/opt/java/jdk/jdk1.8.0_60/bin/java',
+            #                max_mem='3500M',
+            #                max_stack='3500M',
+            #                gatk_jar='/gscmnt/gc2802/halllab/ccdg_resources/lib/GenomeAnalysisTK-3.5-0-g36282e4.jar',
+            #                reference='/gscmnt/gc2802/halllab/ccdg_resources/genomes/human/GRCh38DH/all_sequences.fa',
+            #                break_multiple=1000000
+            #                )
+            #        cmdline = cmd(gvcf, output_gzvcf)
+            #        stdout = os.path.join(stdout_dir, new_gzvcf + '.log')
+            #        lsf_options = {
+            #                'stdout': stdout,
+            #                }
+            #        self.lsf_job_runner.launch(cmdline, lsf_options)
+            ## Sync QC files
             qc_outdir = os.path.join(outdir, 'qc')
             try:
                 os.makedirs(qc_outdir)

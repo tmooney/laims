@@ -1,9 +1,9 @@
 import glob
 import sys
 import os.path
-from pipeinspector.limsdatabase import ReadCountInDb
-from pipeinspector.flagstat import Flagstat
-from pipeinspector.build38realignmentdirectory import InputJson
+from laims.limsdatabase import ReadCountInDb
+from laims.flagstat import Flagstat
+from laims.build38realignmentdirectory import InputJson
 
 
 class DirectoryValidator(object):
@@ -74,7 +74,7 @@ class B38DirectoryValidator(object):
         rv = not sm_tag.startswith('H_')
         if not rv:
             sys.stderr.write("SM tag starts with H_\n")
-        return rv
+        return True
 
     def valid_directory(self):
         return self.directory.complete() and self.readcount_ok() and self.sm_tag_ok()

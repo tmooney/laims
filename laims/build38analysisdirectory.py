@@ -1,4 +1,4 @@
-from directoryvalidation import DirectoryValidator
+from laims.directoryvalidation import DirectoryValidator
 
 import sys
 import os.path
