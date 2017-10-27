@@ -126,6 +126,22 @@ class QcDirectory(object):
             sys.stderr.write('\n')
             self.is_complete = False
 
+    def sample_name(self):
+        '''
+        Grabs internal sample name from the variant calling metrics file
+        '''
+        metrics_file = self.X_chrom_vc_detail_metrics()
+        with open(metrics_file) as f:
+            last_was_commented = False
+            for line in f:
+                if line.startswith('#'):
+                    last_was_commented = True
+                else:
+                    if last_was_commented:
+                        last_was_commented = False
+                    else:
+                        return line.rstrip().split('\t')[0]
+
     def flagstat_file(self):
         if self.output_file_dict is None:
             self._collect_output_file_dict()
