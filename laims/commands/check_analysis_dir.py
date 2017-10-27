@@ -4,17 +4,14 @@ import sys
 import argparse
 import os.path
 
-from pipeinspector.build38analysisdirectory import AnalysisDirectory, QcDirectory
-from pipeinspector.models import Base, ComputeWorkflowSample
+from laims.build38analysisdirectory import AnalysisDirectory, QcDirectory
+from laims.models import Base, ComputeWorkflowSample
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Check analysis directory for completeness', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('database', metavar='<FILE>', help='sqlite database of samples')
-    args = parser.parse_args()
-    db_url = 'sqlite:///' + args.database
+def check_analysis_dir(app):
+    db_url = 'sqlite:///' + app.database
     db = create_engine(db_url)
     Base.metadata.create_all(db)
     Session = sessionmaker(bind=db)
@@ -41,5 +38,4 @@ if __name__ == '__main__':
                     sys.stderr.write('{0} has a missing or incomplete qc directory. Attempt to resync etc\n'.format(sample.source_directory))
 
     session.commit()
-
 

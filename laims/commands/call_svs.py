@@ -8,23 +8,19 @@ import os.path
 
 import subprocess
 
-from pipeinspector.build38analysisdirectory import AnalysisDirectory, AnalysisSvDirectory
-from pipeinspector.models import Base, ComputeWorkflowSample
+from laims.build38analysisdirectory import AnalysisDirectory, AnalysisSvDirectory
+from laims.models import Base, ComputeWorkflowSample
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Check analysis directory for completeness', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('database', metavar='<FILE>', help='sqlite database of samples')
-    parser.add_argument('workorder', metavar='<INT>', nargs='+', help='work order id to process')
-    args = parser.parse_args()
-    db_url = 'sqlite:///' + args.database
+def call_svs(app, workorders):
+    db_url = 'sqlite:///' + app.database
     db = create_engine(db_url)
     Base.metadata.create_all(db)
     Session = sessionmaker(bind=db)
 
-    for workorder in args.workorder:
+    for workorder in workorders:
         session = Session()
         for sample in session.query(ComputeWorkflowSample).filter(
                         ComputeWorkflowSample.source_work_order == workorder
@@ -77,3 +73,4 @@ if __name__ == '__main__':
                 if complete:
                     sys.stderr.write("{0} complete\n".format(sample_name))
         session.close()
+
