@@ -2,8 +2,9 @@
 
 import sys
 import argparse
+import os.path
 
-from pipeinspector.build38analysisdirectory import AnalysisDirectory
+from pipeinspector.build38analysisdirectory import AnalysisDirectory, QcDirectory
 from pipeinspector.models import Base, ComputeWorkflowSample
 
 from sqlalchemy import create_engine
@@ -33,6 +34,12 @@ if __name__ == '__main__':
             if not is_complete:
                 # Print source_directory so we can attempt to process again
                 sys.stderr.write('{0} should be examined and a new attempt made to pre-process the gvcfs etc\n'.format(sample.source_directory))
+            else:
+                qc_directory = QcDirectory(os.path.join(sample.analysis_gvcf_path, 'qc'))
+                qc_synced = qc_directory.is_complete
+                if not qc_synced:
+                    sys.stderr.write('{0} has a missing or incomplete qc directory. Attempt to resync etc\n'.format(sample.source_directory))
+
     session.commit()
 
 
