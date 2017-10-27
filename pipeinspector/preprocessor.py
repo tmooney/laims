@@ -31,8 +31,9 @@ class B38Preprocessor(object):
             outfile = os.path.join(outdir, filename)
             if not (qc_shortcutter.can_shortcut(f, outfile)):
                 files_to_copy.append(f)
-        copy_cmdline = copy_cmd(files_to_copy, outdir)
-        self.lsf_job_runner.launch(copy_cmdline, {'stdout': stdout})
+        if files_to_copy:
+            copy_cmdline = copy_cmd(files_to_copy, outdir)
+            self.lsf_job_runner.launch(copy_cmdline, {'stdout': stdout})
 
     def __call__(self, target_dir):
         # do some STUFF
