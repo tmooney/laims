@@ -117,6 +117,14 @@ class QcDirectory(object):
 
     def __init__(self, directory_path):
         self.path = directory_path
+        self.output_file_dict = QcDirectory._validator.collect_output_file_dict(self.path)
+        try:
+            QcDirectory._validator.complete(self.path, self.output_file_dict)
+            self.is_complete = True
+        except RuntimeError as e:
+            sys.stderr.write(str(e))
+            sys.stderr.write('\n')
+            self.is_complete = False
 
     def flagstat_file(self):
         if self.output_file_dict is None:
