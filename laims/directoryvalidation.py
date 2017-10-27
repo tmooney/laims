@@ -74,7 +74,7 @@ class B38DirectoryValidator(object):
         rv = not sm_tag.startswith('H_')
         if not rv:
             sys.stderr.write("SM tag starts with H_\n")
-        return True
+        return rv
 
     def valid_directory(self):
         return self.directory.complete() and self.readcount_ok() and self.sm_tag_ok()
