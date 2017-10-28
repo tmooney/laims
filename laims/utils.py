@@ -12,6 +12,7 @@ def no_error_on_exist(func):
         except OSError as e:
             if e.errno != errno.EEXIST:
                 raise
+    return wrapper
 
 
 force_make_dirs = no_error_on_exist(os.makedirs)
