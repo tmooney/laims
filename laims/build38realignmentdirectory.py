@@ -1,12 +1,12 @@
 import glob
 import os
-import sys
-import hashlib
-import yaml
 import json
 import re
+from logzero import logger
+
 
 class CramFile(object):
+
     def __init__(self, cram, samtools_path='/gscmnt/gc2802/halllab/ccdg_resources/bin/samtools-1.3.1'):
         self.cram = cram
         self.samtools_path = samtools_path
@@ -29,6 +29,7 @@ class CramFile(object):
         assert(len(samples) == 1)
         return samples.pop()
 
+
 class InputJson(object):
     def __init__(self, input_json):
         with open(input_json) as json_file:
@@ -45,7 +46,7 @@ class InputJson(object):
 
     def bams(self):
         return [ x[0] for x in self.json_data['sequence']['analysis']['data']]
-        
+
 
 class Build38RealignmentDirectory(object):
     _expectations = {
@@ -92,11 +93,11 @@ class Build38RealignmentDirectory(object):
             for glob_string, num_expected in Build38RealignmentDirectory._expectations.iteritems():
                 if not num_expected == len(self.output_file_dict[glob_string]):
                     self.is_complete = False
-                    sys.stderr.write("Missing files matching {0}\n".format(glob_string))
+                    logger.error("Missing files matching {0}\n".format(glob_string))
                     return self.is_complete
             self.is_complete = True
             return self.is_complete
-    
+
     def status(self):
         if self.complete():
             return 'done'
@@ -147,7 +148,7 @@ class Build38RealignmentDirectory(object):
 
     def qc_yaml_file(self):
         return os.path.join(self.path, 'qc_metrics.yaml')
-    
+
     def picard_alignment_metrics_file(self):
         return os.path.join(self.path, 'alignment_summary.txt')
 
@@ -160,6 +161,58 @@ class Build38RealignmentDirectory(object):
     def picard_gc_bias_metrics_file(self):
         return os.path.join(self.path, 'GC_bias_summary.txt')
 
-    def verifybamid_self_sample_file(self):
-        return os.path.join(self.path, 'verify_bam_id.selfSM') 
+    def picard_gc_bias_output_file(self):
+        return os.path.join(self.path, 'GC_bias.txt')
 
+    def picard_gc_bias_chart(self):
+        return os.path.join(self.path, 'GC_bias_chart.pdf')
+
+    def picard_insert_size_metrics_file(self):
+        return os.path.join(self.path, 'insert_size_summary.txt')
+
+    def picard_insert_size_chart(self):
+        return os.path.join(self.path, 'insert_size.pdf')
+
+    def verifybamid_self_sample_file(self):
+        return os.path.join(self.path, 'verify_bam_id.selfSM')
+
+    def verifybamid_self_readgroup_file(self):
+        return os.path.join(self.path, 'verify_bam_id.selfRG')
+
+    def verifybamid_depth_sample_file(self):
+        return os.path.join(self.path, 'verify_bam_id.depthSM')
+
+    def verifybamid_depth_readgroup_file(self):
+        return os.path.join(self.path, 'verify_bam_id.depthRG')
+
+    def bamutil_file(self):
+        return os.path.join(self.path, 'bamutil_stats.txt')
+
+    def X_chrom_vc_detail_metrics(self):
+        return os.path.join(self.path, 'X_chrom.variant_calling_detail_metrics')
+
+    def X_chrom_vc_summary_metrics(self):
+        return os.path.join(self.path, 'X_chrom.variant_calling_summary_metrics')
+
+    def all_chrom_vc_detail_metrics(self):
+        return os.path.join(self.path, 'all.variant_calling_detail_metrics')
+
+    def all_chrom_vc_summary_metrics(self):
+        return os.path.join(self.path, 'all_chrom.variant_calling_summary_metrics')
+
+    def qc_files(self):
+        glob_strings = (
+            "X_chrom*",
+            "all_chrom*",
+            "bamutil_stats.txt",
+            "flagstat.out",
+            "insert_size*",
+            "mark_dups_metrics.txt",
+            "verify_bam_id*",
+            "wgs_metric_summary.txt",
+            "alignment_summary.txt",
+            "GC_bias*",
+            )
+        if self.output_file_dict is None:
+            self._collect_output_file_dict()
+        return [y for x in glob_strings for y in self.output_file_dict[x]]

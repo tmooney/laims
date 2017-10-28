@@ -1,12 +1,15 @@
-#!/usr/bin/env python
-
 from __future__ import division
 
 from crimson import picard, verifybamid, flagstat
 import sys
-import argparse
+import os
 
-from pipeinspector.build38realignmentdirectory import Build38RealignmentDirectory
+from laims.build38analysisdirectory import QcDirectory
+from laims.models import Base, ComputeWorkflowSample
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
 
 class QcTable(object):
 
@@ -65,13 +68,11 @@ class QcTable(object):
         mapped_percent = float('{0:.2f}'.format(metric_line['flagstat_mapped'] / metric_line['flagstat_total'] * 100))
         proper_pair_percent = float('{0:0.2f}'.format(metric_line['flagstat_paired_proper'] / metric_line['flagstat_paired_sequencing'] * 100))
         return mapped_percent - proper_pair_percent
-    
-    def add(self, directory):
-        input_dir = Build38RealignmentDirectory(directory)
-        
+
+    def add(self, sample_name, input_dir):
         metric_line = dict()
 
-        self.add_to_metric_line(metric_line, 'SAMPLE_NAME', input_dir.sample_name())
+        self.add_to_metric_line(metric_line, 'SAMPLE_NAME', sample_name)
 
         flagstat_metrics = flagstat.parse(input_dir.flagstat_file())
         self.add_flagstat_columns(metric_line, flagstat_metrics)
@@ -84,10 +85,10 @@ class QcTable(object):
 
         wgs_metrics = picard.parse(input_dir.picard_wgs_metrics_file())
         self.add_generic_picard_columns(metric_line, wgs_metrics)
-        
+
         gc_metrics = picard.parse(input_dir.picard_gc_bias_metrics_file())
         self.add_generic_picard_columns(metric_line, gc_metrics)
-        
+
         verifybamid_metrics = verifybamid.parse(input_dir.verifybamid_self_sample_file())
         self.add_freemix_column(metric_line, verifybamid_metrics)
 
@@ -104,12 +105,20 @@ class QcTable(object):
             filehandle.write(line)
             filehandle.write('\n')
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Generate QC table from LIMS build38 realignment directory output', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('directories', metavar='<DIR>', nargs='+', help='LIMS output directories to process')
-    args = parser.parse_args()
+
+def generate(app, workorders):
+    db_url = 'sqlite:///' + app.database
+    db = create_engine(db_url)
+    Base.metadata.create_all(db)
+    Session = sessionmaker(bind=db)
     table = QcTable()
-    for d in args.directories:
-        table.add(d)
+    for wo in workorders:
+        session = Session()
+        for sample in session.query(ComputeWorkflowSample).filter(
+                ComputeWorkflowSample.source_work_order == wo
+                ):
+            if (sample.analysis_cram_verifyed and sample.analysis_sv_verified):
+                qc_dir = QcDirectory(os.path.join(sample.analysis_gvcf_path, 'qc'))
+                if qc_dir.is_complete:
+                    table.add(qc_dir.sample_name(), qc_dir)
     table.write(sys.stdout)
-        

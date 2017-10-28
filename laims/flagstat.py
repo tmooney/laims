@@ -16,4 +16,3 @@ class Flagstat(object):
     def read2(self):
         """Number of read2 reads. Primary only."""
         return self._values[7]
-

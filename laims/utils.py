@@ -14,7 +14,7 @@ def md5_checksum(file_name):
 def read_first_checksum(file_name):
     with open(file_name, 'r') as f:
         for line in f:
-            checksum, filepath = line.rstrip().split('  ')
+            checksum = line.rstrip().split('  ')[0]
             return checksum
 
 
