@@ -1,4 +1,3 @@
-import sys
 import os.path
 
 from logzero import logger

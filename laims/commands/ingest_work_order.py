@@ -1,4 +1,3 @@
-import sys
 import csv
 from laims.preprocessor import B38Preprocessor
 from laims.lsf import LsfJob

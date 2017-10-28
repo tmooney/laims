@@ -1,5 +1,4 @@
 import glob
-import sys
 import os.path
 from logzero import logger
 from laims.limsdatabase import ReadCountInDb

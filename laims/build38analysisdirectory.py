@@ -1,7 +1,6 @@
 from laims.directoryvalidation import DirectoryValidator
 from logzero import logger
 
-import sys
 import os.path
 
 class AnalysisDirectory(object):
