@@ -55,18 +55,18 @@ def call_svs(app, workorders):
                 if not sv_directory.cnvnator_complete():
                     # launch cnvnator
                     complete = False
-                    print subprocess.check_output(['bash', '/gscuser/dlarson/src/internal-sv-pipeline/cnvnator_histogram.sh', filename])
+                    print subprocess.check_output(['/bin/bash', '/gscuser/dlarson/src/internal-sv-pipeline/cnvnator_histogram.sh', filename])
                 if not sv_directory.extract_complete():
                     # launch
                     complete = False
-                    print subprocess.check_output(['bash', '/gscuser/dlarson/src/internal-sv-pipeline/extract_sv_reads.sh', filename])
+                    print subprocess.check_output(['/bin/bash', '/gscuser/dlarson/src/internal-sv-pipeline/extract_sv_reads.sh', filename])
                 elif not sv_directory.lumpy_complete():
                     # launch
                     complete = False
-                    subprocess.call(['bash', '/gscuser/dlarson/src/internal-sv-pipeline/lumpy.sh', filename])
+                    subprocess.call(['/bin/bash', '/gscuser/dlarson/src/internal-sv-pipeline/lumpy.sh', filename])
                 elif not sv_directory.svtyper_complete():
                     complete = False
-                    subprocess.call(['bash', '/gscuser/dlarson/src/internal-sv-pipeline/genotype.sh', filename])
+                    subprocess.call(['/bin/bash', '/gscuser/dlarson/src/internal-sv-pipeline/genotype.sh', filename])
                 sample.analysis_sv_verified = complete
                 session.commit()
                 if complete:
