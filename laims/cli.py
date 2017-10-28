@@ -1,6 +1,7 @@
 import os.path
 import json
 import click
+import laims
 
 
 class LaimsApp(object):
@@ -28,6 +29,7 @@ class LaimsApp(object):
 @click.option('--config', envvar='LAIMS_CONFIG_PATH')
 @click.option('--database', envvar='LAIMS_DB_PATH')
 @click.option('--job-group', default=None)
+@click.version_option(version=laims.__version__, prog_name='laims', message='%(prog)s %(version)s')
 @click.pass_context
 def cli(ctx, config, database, job_group):
     ctx.obj = LaimsApp(config, database, job_group)
