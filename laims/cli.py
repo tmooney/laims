@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import os.path
 import json
 import click
@@ -70,6 +68,3 @@ def generate_table(app, workorder):
     import laims.commands.generate_qc_table
     laims.commands.generate_qc_table.generate(app, workorder)
 
-if __name__ == '__main__':
-    cli()
-        
