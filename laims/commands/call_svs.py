@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import sys
-import argparse
 import os
 import errno
 import os.path
@@ -13,6 +12,7 @@ from laims.models import Base, ComputeWorkflowSample
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
 
 def call_svs(app, workorders):
     db_url = 'sqlite:///' + app.database
@@ -73,4 +73,3 @@ def call_svs(app, workorders):
                 if complete:
                     sys.stderr.write("{0} complete\n".format(sample_name))
         session.close()
-

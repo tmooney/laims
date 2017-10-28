@@ -1,7 +1,4 @@
-#!/usr/bin/env python
-
 import sys
-import argparse
 import csv
 from laims.preprocessor import B38Preprocessor
 from laims.lsf import LsfJob
@@ -10,7 +7,8 @@ from laims.models import Base, ComputeWorkflowSample
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-def ingest(app, csv, output_dir):
+
+def ingest(app, csv_file, output_dir):
 
     db = create_engine('sqlite:///' + app.database)
     Base.metadata.create_all(db)
@@ -22,13 +20,13 @@ def ingest(app, csv, output_dir):
         'docker': 'registry.gsc.wustl.edu/genome/genome_perl_environment:23',
         }
     if app.job_group is not None:
-        default_job_options['group'] = args.job_group
+        default_job_options['group'] = app.job_group
 
     preprocessor = B38Preprocessor(output_dir, job_runner=LsfJob(default_job_options))
 
     columns = {'Compute Workflow Execution': 'compute_workflow_execution', 'Work Order': 'work_order', 'DNA': 'ingest_sample_name', 'WOI': 'woi', 'Working Directory': 'source_directory'}
     seen = set()
-    with open(csv) as f:
+    with open(csv_file) as f:
         reader = csv.DictReader(f, delimiter=',')
         for row in reader:
             output_json = dict()

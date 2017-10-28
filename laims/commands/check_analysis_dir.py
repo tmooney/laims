@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import sys
-import argparse
 import os.path
 
 from laims.build38analysisdirectory import AnalysisDirectory, QcDirectory
@@ -9,6 +8,7 @@ from laims.models import Base, ComputeWorkflowSample
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+
 
 def check_analysis_dir(app):
     db_url = 'sqlite:///' + app.database
@@ -18,11 +18,11 @@ def check_analysis_dir(app):
 
     session = Session()
     for sample in session.query(ComputeWorkflowSample).filter(
-            ComputeWorkflowSample.analysis_gvcf_path != None,
-            ComputeWorkflowSample.analysis_cram_path != None):
+            ComputeWorkflowSample.analysis_gvcf_path is not None,
+            ComputeWorkflowSample.analysis_cram_path is not None):
         if (sample.analysis_cram_verifyed is None
-                or not sample.analysis_cram_verifyed 
-                or sample.analysis_gvcfs_verified is None 
+                or not sample.analysis_cram_verifyed
+                or sample.analysis_gvcfs_verified is None
                 or not sample.analysis_gvcfs_verified):
             directory = AnalysisDirectory(sample.analysis_gvcf_path)
             is_complete = directory.is_complete
@@ -38,4 +38,3 @@ def check_analysis_dir(app):
                     sys.stderr.write('{0} has a missing or incomplete qc directory. Attempt to resync etc\n'.format(sample.source_directory))
 
     session.commit()
-
