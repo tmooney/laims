@@ -1,6 +1,23 @@
 import hashlib
+import os
 import os.path
 import datetime
+import errno
+
+
+def no_error_on_exist(func):
+    def wrapper(*args, **kwargs):
+        try:
+            func(*args, **kwargs)
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                raise
+
+
+force_make_dirs = no_error_on_exist(os.makedirs)
+
+
+force_symlink = no_error_on_exist(os.symlink)
 
 
 def md5_checksum(file_name):

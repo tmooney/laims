@@ -1,5 +1,4 @@
 import os
-import errno
 import os.path
 
 import subprocess
@@ -8,6 +7,7 @@ from logzero import logger
 
 from laims.build38analysisdirectory import AnalysisDirectory, AnalysisSvDirectory
 from laims.models import Base, ComputeWorkflowSample
+from laims.utils import force_make_dirs, force_symlink
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -36,21 +36,9 @@ def call_svs(app, workorders):
                 complete = True
                 if not sv_directory.staging_complete():
                     # stage directory
-                    try:
-                        os.makedirs(sample.analysis_sv_path)
-                    except OSError as e:
-                        if e.errno != errno.EEXIST:
-                            raise
-                    try:
-                        os.symlink(cram_file, os.path.join(sample.analysis_sv_path, filename))
-                    except OSError as e:
-                        if e.errno != errno.EEXIST:
-                            raise
-                    try:
-                        os.symlink(cram_file + '.crai', os.path.join(sample.analysis_sv_path, filename + '.crai'))
-                    except OSError as e:
-                        if e.errno != errno.EEXIST:
-                            raise
+                    force_make_dirs(sample.analysis_sv_path)
+                    force_symlink(cram_file, os.path.join(sample.analysis_sv_path, filename))
+                    force_symlink(cram_file + '.crai', os.path.join(sample.analysis_sv_path, filename + '.crai'))
                 os.chdir(sample.analysis_sv_path)
                 if not sv_directory.cnvnator_complete():
                     # launch cnvnator

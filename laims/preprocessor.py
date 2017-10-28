@@ -1,7 +1,7 @@
 import json
 import os
 import os.path
-import errno
+from logzero import logger
 from laims.build38realignmentdirectory import Build38RealignmentDirectory
 from laims.directoryvalidation import B38DirectoryValidator
 from laims.shortcutter import Shortcutter
@@ -14,11 +14,7 @@ class B38Preprocessor(object):
         self.dest_dir = dest_dir
         self.logdir = os.path.join(self.dest_dir, 'log')
         self.lsf_job_runner = job_runner
-        try:
-            os.makedirs(self.logdir)
-        except OSError as e:
-            if e.errno != errno.EEXIST:
-                raise
+        utils.force_make_dirs(self.logdir)
 
     def _qc_files(self, d, outdir, stdout_dir):
         stdout = os.path.join(stdout_dir, 'qc_file_copy.log')
@@ -40,22 +36,13 @@ class B38Preprocessor(object):
         d = Build38RealignmentDirectory(target_dir)
         validator = B38DirectoryValidator(d)
         if validator.valid_directory():
-            print 'Directory valid for processing'
+            logger.info('Directory valid for processing')
             outdir = self.output_directory(d)
-            print 'Output directory is {0}'.format(outdir)
-            try:
-                os.makedirs(outdir)
-            except OSError as e:
-                # Don't freak out if the directory exists
-                if e.errno != errno.EEXIST:
-                    raise
+            logger.info('Output directory is {0}'.format(outdir))
+            utils.force_make_dirs(outdir)
 
             stdout_dir = os.path.join(self.logdir, d.sample_name())
-            try:
-                os.makedirs(stdout_dir)
-            except OSError as e:
-                if e.errno != errno.EEXIST:
-                    raise
+            utils.force_make_dirs(stdout_dir)
 
             # always submit a CRAM transfer because we use rsync
             # and it checks these things...
@@ -91,16 +78,11 @@ class B38Preprocessor(object):
                     self.lsf_job_runner.launch(cmdline, lsf_options)
             # Sync QC files
             qc_outdir = os.path.join(outdir, 'qc')
-            try:
-                os.makedirs(qc_outdir)
-            except OSError as e:
-                # Don't freak out if the directory exists
-                if e.errno != errno.EEXIST:
-                    raise
+            utils.force_make_dirs(qc_outdir)
             self._qc_files(d, qc_outdir, stdout_dir)
             return outdir
         else:
-            print 'Invalid for processing'
+            logger.warn('Invalid for processing')
             return None
 
     def output_directory(self, d):
