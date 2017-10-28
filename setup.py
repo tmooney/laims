@@ -1,0 +1,18 @@
+from setuptools import setup, find_packages
+
+setup(
+    name='laims',
+    version='0.01',
+    packages=find_packages(exclude=['tests']),
+    install_requires=[
+        'click==6.7',
+	'SQLAlchemy==1.1.11',
+	'Crimson>0.3.0',
+    ],
+    dependency_links=['https://github.com/bow/crimson/tarball/master#egg=Crimson-0.4.0'],
+    entry_points={
+	'console_scripts': [
+            'laims=laims.cli:cli',
+		]
+	},
+)
