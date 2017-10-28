@@ -5,6 +5,8 @@ import os.path
 
 import subprocess
 
+from logzero import logger
+
 from laims.build38analysisdirectory import AnalysisDirectory, AnalysisSvDirectory
 from laims.models import Base, ComputeWorkflowSample
 
@@ -69,5 +71,5 @@ def call_svs(app, workorders):
                 sample.analysis_sv_verified = complete
                 session.commit()
                 if complete:
-                    sys.stderr.write("{0} complete\n".format(sample_name))
+                    logger.info("{0} complete".format(sample_name))
         session.close()

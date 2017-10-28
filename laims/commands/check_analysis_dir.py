@@ -1,6 +1,8 @@
 import sys
 import os.path
 
+from logzero import logger
+
 from laims.build38analysisdirectory import AnalysisDirectory, QcDirectory
 from laims.models import Base, ComputeWorkflowSample
 
@@ -28,11 +30,11 @@ def check_analysis_dir(app):
             sample.analysis_cram_verifyed = is_complete
             if not is_complete:
                 # Print source_directory so we can attempt to process again
-                sys.stderr.write('{0} should be examined and a new attempt made to pre-process the gvcfs etc\n'.format(sample.source_directory))
+                logger.warn('{0} should be examined and a new attempt made to pre-process the gvcfs etc.'.format(sample.source_directory))
             else:
                 qc_directory = QcDirectory(os.path.join(sample.analysis_gvcf_path, 'qc'))
                 qc_synced = qc_directory.is_complete
                 if not qc_synced:
-                    sys.stderr.write('{0} has a missing or incomplete qc directory. Attempt to resync etc\n'.format(sample.source_directory))
+                    logger.warn('{0} has a missing or incomplete qc directory. Attempt to resync.'.format(sample.source_directory))
 
     session.commit()

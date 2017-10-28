@@ -3,6 +3,7 @@ import os
 import sys
 import json
 import re
+from logzero import logger
 
 
 class CramFile(object):
@@ -93,7 +94,7 @@ class Build38RealignmentDirectory(object):
             for glob_string, num_expected in Build38RealignmentDirectory._expectations.iteritems():
                 if not num_expected == len(self.output_file_dict[glob_string]):
                     self.is_complete = False
-                    sys.stderr.write("Missing files matching {0}\n".format(glob_string))
+                    logger.error("Missing files matching {0}\n".format(glob_string))
                     return self.is_complete
             self.is_complete = True
             return self.is_complete

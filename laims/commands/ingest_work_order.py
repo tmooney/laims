@@ -3,6 +3,7 @@ import csv
 from laims.preprocessor import B38Preprocessor
 from laims.lsf import LsfJob
 from laims.models import Base, ComputeWorkflowSample
+from logzero import logger
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -38,7 +39,7 @@ def ingest(app, csv_file, output_dir):
                     output_json['work_order']
                     )
             if seen_key in seen:
-                sys.stderr.write('Duplicate row with identical source directory, sample name and workorder. Skipping...\n')
+                logger.info('Duplicate row with identical source directory, sample name and workorder. Skipping...')
                 continue
             else:
                 seen.add(seen_key)

@@ -1,4 +1,5 @@
 from laims.directoryvalidation import DirectoryValidator
+from logzero import logger
 
 import sys
 import os.path
@@ -21,8 +22,7 @@ class AnalysisDirectory(object):
             AnalysisDirectory._validator.complete(self.path, self.output_file_dict)
             self.is_complete = True
         except RuntimeError as e:
-            sys.stderr.write(str(e))
-            sys.stderr.write('\n')
+            logger.warn(str(e))
             self.is_complete = False
 
         if self.is_complete:
@@ -79,8 +79,7 @@ class AnalysisSvDirectory(object):
             validator.complete(self.path, variable)
             return True
         except RuntimeError as e:
-            sys.stderr.write(str(e))
-            sys.stderr.write('\n')
+            logger.warn(str(e))
             return False
 
     def staging_complete(self):
@@ -122,8 +121,7 @@ class QcDirectory(object):
             QcDirectory._validator.complete(self.path, self.output_file_dict)
             self.is_complete = True
         except RuntimeError as e:
-            sys.stderr.write(str(e))
-            sys.stderr.write('\n')
+            logger.warn(str(e))
             self.is_complete = False
 
     def sample_name(self):

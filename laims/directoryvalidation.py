@@ -1,6 +1,7 @@
 import glob
 import sys
 import os.path
+from logzero import logger
 from laims.limsdatabase import ReadCountInDb
 from laims.flagstat import Flagstat
 from laims.build38realignmentdirectory import InputJson
@@ -66,14 +67,14 @@ class B38DirectoryValidator(object):
         aligned_total = flagstat.read1 + flagstat.read2
         rv = aligned_total == unaligned_total
         if not rv:
-            sys.stderr.write("Aligned total bp doesn't match unaligned total bp\n")
+            logger.error("Aligned total bp doesn't match unaligned total bp")
         return rv
 
     def sm_tag_ok(self):
         sm_tag = self.directory.sm_tag()
         rv = not sm_tag.startswith('H_')
         if not rv:
-            sys.stderr.write("SM tag starts with H_\n")
+            logger.error("SM tag starts with H_")
         return rv
 
     def valid_directory(self):
