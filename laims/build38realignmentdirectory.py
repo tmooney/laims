@@ -149,57 +149,6 @@ class Build38RealignmentDirectory(object):
     def qc_yaml_file(self):
         return os.path.join(self.path, 'qc_metrics.yaml')
 
-    def picard_alignment_metrics_file(self):
-        return os.path.join(self.path, 'alignment_summary.txt')
-
-    def picard_mark_duplicates_metrics_file(self):
-        return os.path.join(self.path, 'mark_dups_metrics.txt')
-
-    def picard_wgs_metrics_file(self):
-        return os.path.join(self.path, 'wgs_metric_summary.txt')
-
-    def picard_gc_bias_metrics_file(self):
-        return os.path.join(self.path, 'GC_bias_summary.txt')
-
-    def picard_gc_bias_output_file(self):
-        return os.path.join(self.path, 'GC_bias.txt')
-
-    def picard_gc_bias_chart(self):
-        return os.path.join(self.path, 'GC_bias_chart.pdf')
-
-    def picard_insert_size_metrics_file(self):
-        return os.path.join(self.path, 'insert_size_summary.txt')
-
-    def picard_insert_size_chart(self):
-        return os.path.join(self.path, 'insert_size.pdf')
-
-    def verifybamid_self_sample_file(self):
-        return os.path.join(self.path, 'verify_bam_id.selfSM')
-
-    def verifybamid_self_readgroup_file(self):
-        return os.path.join(self.path, 'verify_bam_id.selfRG')
-
-    def verifybamid_depth_sample_file(self):
-        return os.path.join(self.path, 'verify_bam_id.depthSM')
-
-    def verifybamid_depth_readgroup_file(self):
-        return os.path.join(self.path, 'verify_bam_id.depthRG')
-
-    def bamutil_file(self):
-        return os.path.join(self.path, 'bamutil_stats.txt')
-
-    def X_chrom_vc_detail_metrics(self):
-        return os.path.join(self.path, 'X_chrom.variant_calling_detail_metrics')
-
-    def X_chrom_vc_summary_metrics(self):
-        return os.path.join(self.path, 'X_chrom.variant_calling_summary_metrics')
-
-    def all_chrom_vc_detail_metrics(self):
-        return os.path.join(self.path, 'all.variant_calling_detail_metrics')
-
-    def all_chrom_vc_summary_metrics(self):
-        return os.path.join(self.path, 'all_chrom.variant_calling_summary_metrics')
-
     def qc_files(self):
         glob_strings = (
             "X_chrom*",
