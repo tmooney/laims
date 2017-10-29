@@ -6,7 +6,7 @@ from laims.database import open_db
 from logzero import logger
 
 
-def ingest(app, csv_file, output_dir):
+def ingest(app, csv_file, output_dir, force=False):
     Session = open_db(app.database)
 
     default_job_options = {
@@ -17,7 +17,7 @@ def ingest(app, csv_file, output_dir):
     if app.job_group is not None:
         default_job_options['group'] = app.job_group
 
-    preprocessor = B38Preprocessor(output_dir, job_runner=LsfJob(default_job_options))
+    preprocessor = B38Preprocessor(output_dir, job_runner=LsfJob(default_job_options), force=force)
 
     columns = {'Compute Workflow Execution': 'compute_workflow_execution', 'Work Order': 'work_order', 'DNA': 'ingest_sample_name', 'WOI': 'woi', 'Working Directory': 'source_directory'}
     seen = set()

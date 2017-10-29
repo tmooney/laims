@@ -47,11 +47,12 @@ def cli(ctx, config, database, job_group):
 @cli.command(help='ingest LIMS build38 realignment compute_workflow_execution csv')
 @click.argument('workorder_csv')
 @click.option('--output-dir')
+@click.option('--force/--no-force', default=False)
 @click.pass_obj
-def ingest(app, workorder_csv, output_dir):
+def ingest(app, workorder_csv, output_dir, force):
     from laims.commands.ingest_work_order import ingest
     app.log_config()
-    ingest(app, workorder_csv, output_dir)
+    ingest(app, workorder_csv, output_dir, force)
 
 @cli.command(help='check analysis directory for completeness')
 @click.pass_obj

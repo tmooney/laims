@@ -9,10 +9,11 @@ import laims.utils as utils
 
 class B38Preprocessor(object):
 
-    def __init__(self, dest_dir, job_runner):
+    def __init__(self, dest_dir, job_runner, force=False):
         self.dest_dir = dest_dir
         self.logdir = os.path.join(self.dest_dir, 'log')
         self.lsf_job_runner = job_runner
+        self.force = force
         utils.force_make_dirs(self.logdir)
 
     def _qc_files(self, d, outdir, stdout_dir):
@@ -34,7 +35,7 @@ class B38Preprocessor(object):
         # do some STUFF
         d = Build38RealignmentDirectory(target_dir)
         validator = B38DirectoryValidator(d)
-        if validator.valid_directory():
+        if validator.valid_directory() or self.force:
             logger.info('Directory valid for processing')
             outdir = self.output_directory(d)
             logger.info('Output directory is {0}'.format(outdir))
