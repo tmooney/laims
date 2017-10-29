@@ -2,6 +2,7 @@ import os.path
 import json
 import click
 import laims
+from logzero import logger
 
 
 class LaimsApp(object):
@@ -15,6 +16,8 @@ class LaimsApp(object):
         if self.config_file is None:
             self.config_file = os.path.join(click.get_app_dir('laims'), 'config.json')
         self._load_config()
+        logger.info('Using config at {config}'.format(config=self.config_file))
+        logger.info('Using database at {db}'.format(db=self.database))
 
     def _load_attr_from_config(self, name, json_data):
         if getattr(self, name) is None and name in json_data:
@@ -26,6 +29,10 @@ class LaimsApp(object):
                 json_data = json.load(cfg)
                 self._load_attr_from_config('database', json_data)
                 self._load_attr_from_config('job_group', json_data)
+        else:
+            logger.error('No configuration file found at {config}'.format(
+                self.config_file
+                )
 
 
 @click.group()
@@ -42,16 +49,12 @@ def cli(ctx, config, database, job_group):
 @click.option('--output-dir')
 @click.pass_obj
 def ingest(app, workorder_csv, output_dir):
-    print app.config_file
-    print app.database
     from laims.commands.ingest_work_order import ingest
     ingest(app, workorder_csv, output_dir)
 
 @cli.command(help='check analysis directory for completeness')
 @click.pass_obj
 def check(app):
-    print app.config_file
-    print app.database
     from laims.commands.check_analysis_dir import check_analysis_dir
     check_analysis_dir(app)
 
@@ -59,8 +62,6 @@ def check(app):
 @click.argument('workorder', nargs=-1, type=int)
 @click.pass_obj
 def call_sv(app, workorder):
-    print app.config_file
-    print app.database
     import laims.commands.call_svs
     laims.commands.call_svs.call_svs(app, workorder)
 
@@ -68,8 +69,6 @@ def call_sv(app, workorder):
 @click.argument('workorder', nargs=-1, type=int)
 @click.pass_obj
 def generate_table(app, workorder):
-    print app.config_file
-    print app.database
     import laims.commands.generate_qc_table
     laims.commands.generate_qc_table.generate(app, workorder)
 
