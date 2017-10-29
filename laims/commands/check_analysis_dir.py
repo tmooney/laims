@@ -3,18 +3,12 @@ import os.path
 from logzero import logger
 
 from laims.build38analysisdirectory import AnalysisDirectory, QcDirectory
-from laims.models import Base, ComputeWorkflowSample
-
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from laims.models import ComputeWorkflowSample
+from laims.database import open_db
 
 
 def check_analysis_dir(app):
-    db_url = 'sqlite:///' + app.database
-    db = create_engine(db_url)
-    Base.metadata.create_all(db)
-    Session = sessionmaker(bind=db)
-
+    Session = open_db(app.database)
     session = Session()
     for sample in session.query(ComputeWorkflowSample).filter(
             ComputeWorkflowSample.analysis_gvcf_path is not None,

@@ -5,10 +5,8 @@ import sys
 import os
 
 from laims.build38analysisdirectory import QcDirectory
-from laims.models import Base, ComputeWorkflowSample
-
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from laims.models import ComputeWorkflowSample
+from laims.database import open_db
 
 
 class QcTable(object):
@@ -107,10 +105,7 @@ class QcTable(object):
 
 
 def generate(app, workorders):
-    db_url = 'sqlite:///' + app.database
-    db = create_engine(db_url)
-    Base.metadata.create_all(db)
-    Session = sessionmaker(bind=db)
+    Session = open_db(app.database)
     table = QcTable()
     for wo in workorders:
         session = Session()

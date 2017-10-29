@@ -6,19 +6,13 @@ import subprocess
 from logzero import logger
 
 from laims.build38analysisdirectory import AnalysisDirectory, AnalysisSvDirectory
-from laims.models import Base, ComputeWorkflowSample
+from laims.models import ComputeWorkflowSample
 from laims.utils import force_make_dirs, force_symlink
-
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from laims.database import open_db
 
 
 def call_svs(app, workorders):
-    db_url = 'sqlite:///' + app.database
-    db = create_engine(db_url)
-    Base.metadata.create_all(db)
-    Session = sessionmaker(bind=db)
-
+    Session = open_db(app.database)
     for workorder in workorders:
         session = Session()
         for sample in session.query(ComputeWorkflowSample).filter(

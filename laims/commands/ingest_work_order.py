@@ -1,18 +1,13 @@
 import csv
 from laims.preprocessor import B38Preprocessor
 from laims.lsf import LsfJob
-from laims.models import Base, ComputeWorkflowSample
+from laims.models import ComputeWorkflowSample
+from laims.database import open_db
 from logzero import logger
-
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 
 
 def ingest(app, csv_file, output_dir):
-
-    db = create_engine('sqlite:///' + app.database)
-    Base.metadata.create_all(db)
-    Session = sessionmaker(bind=db)
+    Session = open_db(app.database)
 
     default_job_options = {
         'memory_in_gb': 5,
