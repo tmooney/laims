@@ -16,14 +16,17 @@ class LaimsApp(object):
             self.config_file = os.path.join(click.get_app_dir('laims'), 'config.json')
         self._load_config()
 
+    def _load_attr_from_config(self, name, json_data):
+        if getattr(self, name) is None and name in json_data:
+            setattr(self, name, json_data[name])
+
     def _load_config(self):
         if os.path.exists(self.config_file):
             with open(self.config_file) as cfg:
                 json_data = json.load(cfg)
-                if self.database is None and 'database' in json_data:
-                    self.database = json_data['database']
-                if self.job_group is None and 'job_group' in json_data:
-                    self.job_group = json_data['job_group']
+                self._load_attr_from_config('database', json_data)
+                self._load_attr_from_config('job_group', json_data)
+
 
 @click.group()
 @click.option('--config', envvar='LAIMS_CONFIG_PATH')
