@@ -57,7 +57,7 @@ class B38Preprocessor(object):
                 cram_copy_cmdline = cram_copy_cmd(d.cram_file(), outdir)
                 self.lsf_job_runner.launch(cram_copy_cmdline, {'stdout': copy_stdout})
 
-            shortcutter = GVCFShortcutter(d, outdir)
+            shortcutter = Shortcutter(d, outdir, '.gvcf_file_md5s.json', lambda x: x.all_gvcf_files())
             for gvcf in d.all_gvcf_files():
                 new_gzvcf = os.path.basename(gvcf)
                 output_gzvcf = os.path.join(outdir, new_gzvcf)
@@ -87,48 +87,6 @@ class B38Preprocessor(object):
 
     def output_directory(self, d):
         return os.path.join(self.dest_dir, d.sample_name())
-
-
-class GVCFShortcutter(object):
-    def __init__(self, input_directory, output_directory):
-        self.output_directory = output_directory
-        self.input_directory = input_directory
-        self.input_md5s = self.input_md5_gvcfs()
-        self.output_md5s = self.md5_gvcfs()
-
-    # NOTE Md5 keys should be basename, not full path
-    def md5_json(self):
-        return os.path.join(self.output_directory, '.gvcf_file_md5s.json')
-
-    def input_md5_gvcfs(self):
-        md5s = dict()
-        for filepath in self.input_directory.all_gvcf_files():
-            filename = os.path.basename(filepath)
-            md5s[filename] = utils.md5_checksum(filepath)
-        return md5s
-
-    def md5_gvcfs(self):
-        json_file = self.md5_json()
-        if os.path.isfile(json_file):
-            with open(json_file) as jsonfile:
-                return json.load(jsonfile)
-        else:
-            md5s = self.input_md5_gvcfs()
-            with open(json_file, 'w') as output:
-                json.dump(md5s, output)
-            return md5s
-
-    def can_shortcut(self, input_file, output_file):
-        filename = os.path.basename(input_file)
-        input_md5 = self.input_md5s[filename]
-        try:
-            output_md5 = self.output_md5s[filename]
-        except KeyError:
-            raise RuntimeError('{0} not previously recorded in {1} md5 json. This is likely due to a code change in lims or here.'.format(input_file, self.output_directory))
-        if os.path.isfile(output_file) and input_md5 == output_md5:
-            return True
-        else:
-            return False
 
 
 class RewriteGvcfCmd(object):
