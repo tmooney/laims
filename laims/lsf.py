@@ -68,7 +68,7 @@ class LsfJob(object):
         options.update(override_options)
         return self.bsub_options + reduce(
                 lambda x, y: x + y,
-                [x(options) for x in LsfJob.available_options if x is not None]
+                [y for y in [x(options) for x in LsfJob.available_options] if y is not None]
                 )
 
     def _construct_cmd(self, cmd, cmd_options):
