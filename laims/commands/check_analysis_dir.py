@@ -29,5 +29,7 @@ def check_analysis_dir(app):
                 qc_synced = qc_directory.is_complete
                 if not qc_synced:
                     logger.warn('{0} has a missing or incomplete qc directory. Attempt to resync.'.format(sample.source_directory))
+                else:
+                    logger.info('{0} complete.'.format(sample.source_directory))
 
     session.commit()
