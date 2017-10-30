@@ -112,7 +112,7 @@ def generate(app, workorders):
         for sample in session.query(ComputeWorkflowSample).filter(
                 ComputeWorkflowSample.source_work_order == wo
                 ):
-            if (sample.analysis_cram_verifyed and sample.analysis_sv_verified):
+            if (sample.analysis_cram_verifyed):
                 qc_dir = QcDirectory(os.path.join(sample.analysis_gvcf_path, 'qc'))
                 if qc_dir.is_complete:
                     table.add(qc_dir.sample_name(), qc_dir)
