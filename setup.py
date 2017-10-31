@@ -12,7 +12,7 @@ setup(
         'Crimson>0.3.0',
         'logzero==1.3.1',
     ],
-    dependency_links=['https://github.com/bow/crimson/tarball/master#egg=Crimson-0.4.0'],
+    dependency_links=['https://github.com/ernfrid/crimson/tarball/verifybamid#egg=Crimson-0.4.0'],
     entry_points={
             'console_scripts': [
             'laims=laims.cli:cli',
