@@ -1,6 +1,6 @@
 FROM ubuntu:16.04
 LABEL maintainer "Dave Larson <delarson@wustl.edu>"
-LABEL description="Lame analysis information management"
+LABEL description="Lame analysis information management system"
 
 COPY . /tmp/src
 
