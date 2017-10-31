@@ -8,6 +8,7 @@ RUN apt-get update -qq \
     && apt-get -y install apt-transport-https \
     && apt-get update -qq \
     && apt-get -y install --no-install-recommends \
+        libnss-sss \
         python \
         python-pip \
     && pip install --upgrade pip \
