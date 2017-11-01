@@ -1,6 +1,7 @@
 from __future__ import division
 
 from crimson import picard, verifybamid, flagstat
+from logzero import logger
 import sys
 import os
 
@@ -115,5 +116,6 @@ def generate(app, workorders):
             if (sample.analysis_cram_verifyed):
                 qc_dir = QcDirectory(os.path.join(sample.analysis_gvcf_path, 'qc'))
                 if qc_dir.is_complete:
+                    logger.info('Adding qc for {0}'.format(sample.analysis_gvcf_path))
                     table.add(qc_dir.sample_name(), qc_dir)
     table.write(sys.stdout)
