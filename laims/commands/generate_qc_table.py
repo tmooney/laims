@@ -1,5 +1,6 @@
 from __future__ import division
 
+from collections import defaultdict
 from crimson import picard, verifybamid, flagstat
 from logzero import logger
 import sys
@@ -17,7 +18,7 @@ class QcTable(object):
         self.header_set = set()
         self.header_order = list()
         self.exclusions = set(
-                ('LIBRARY', 'SAMPLE')
+                ('LIBRARY', 'SAMPLE', 'ACCUMULATION_LEVEL')
                 )
 
     def add_to_metric_line(self, metric_line, key, value):
@@ -42,6 +43,25 @@ class QcTable(object):
                 if key != 'CATEGORY':
                     new_key = '_'.join([category, key])
                     self.add_to_metric_line(line, new_key, picard_line[key])
+
+    def add_picard_markdup_columns(self, line, markdup_metrics):
+        # NOTE If there are more than one library then the contents
+        # are a list of dictionaries. Otherwise it is simply a dict
+        data = markdup_metrics['metrics']['contents']
+        if isinstance(data, list):
+            # Multiple libraries
+            # We can sum up everything but PERCENT_DUPLICATION
+            # I think it is ok to sum ESTIMATED_LIBRARY_SIZE between the two libraries
+            totals = defaultdict(int)
+            for lib in data:
+                for key in lib:
+                    if key not in ('LIBRARY', 'PERCENT_DUPLICATION'):
+                        totals[key] += int(lib[key])
+            totals['PERCENT_DUPLICATION'] = (totals['UNPAIRED_READ_DUPLICATES'] + totals['READ_PAIR_DUPLICATES']) / float(totals['UNPAIRED_READS_EXAMINED'] + totals['READ_PAIRS_EXAMINED'])
+            totals['PERCENT_DUPLICATION'] = '{:.6f}'.format(totals['PERCENT_DUPLICATION'])
+            data = totals
+        for key in data:
+            self.add_to_metric_line(line, key, data[key])
 
     def add_flagstat_columns(self, line, flagstat_metrics):
         for key in flagstat_metrics['pass_qc']:
@@ -80,7 +100,7 @@ class QcTable(object):
         self.add_picard_alignment_columns(metric_line, alignment_metrics)
 
         dup_metrics = picard.parse(input_dir.picard_mark_duplicates_metrics_file())
-        self.add_generic_picard_columns(metric_line, dup_metrics)
+        self.add_picard_markdup_columns(metric_line, dup_metrics)
 
         wgs_metrics = picard.parse(input_dir.picard_wgs_metrics_file())
         self.add_generic_picard_columns(metric_line, wgs_metrics)
