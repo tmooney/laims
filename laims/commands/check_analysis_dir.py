@@ -10,9 +10,10 @@ from laims.database import open_db
 def check_analysis_dir(app):
     Session = open_db(app.database)
     session = Session()
-    for sample in session.query(ComputeWorkflowSample).filter(
-            ComputeWorkflowSample.analysis_gvcf_path.isnot(None),
-            ComputeWorkflowSample.analysis_cram_path.isnot(None)):
+    for sample in session.query(ComputeWorkflowSample):
+        if (sample.analysis_gvcf_path is None or sample.analysis_gvcf_path is None):
+            logger.warn('No analysis directory in database for {0}. Is the source directory invalid?'.format(sample.source_directory))
+            continue
         if (sample.analysis_cram_verifyed is None
                 or not sample.analysis_cram_verifyed
                 or sample.analysis_gvcfs_verified is None
