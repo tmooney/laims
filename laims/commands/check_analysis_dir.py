@@ -11,8 +11,8 @@ def check_analysis_dir(app):
     Session = open_db(app.database)
     session = Session()
     for sample in session.query(ComputeWorkflowSample).filter(
-            ComputeWorkflowSample.analysis_gvcf_path is not None,
-            ComputeWorkflowSample.analysis_cram_path is not None):
+            ComputeWorkflowSample.analysis_gvcf_path.isnot(None),
+            ComputeWorkflowSample.analysis_cram_path.isnot(None)):
         if (sample.analysis_cram_verifyed is None
                 or not sample.analysis_cram_verifyed
                 or sample.analysis_gvcfs_verified is None
