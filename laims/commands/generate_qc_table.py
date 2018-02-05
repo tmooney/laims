@@ -88,10 +88,11 @@ class QcTable(object):
         proper_pair_percent = float('{0:0.2f}'.format(metric_line['flagstat_paired_proper'] / metric_line['flagstat_paired_sequencing'] * 100))
         return mapped_percent - proper_pair_percent
 
-    def add(self, sample_name, input_dir):
+    def add(self, sample_name, input_dir, internal_sample_name):
         metric_line = dict()
 
         self.add_to_metric_line(metric_line, 'SAMPLE_NAME', sample_name)
+        self.add_to_metric_line(metric_line, 'INTERNAL_NAME', internal_sample_name)
 
         flagstat_metrics = flagstat.parse(input_dir.flagstat_file())
         self.add_flagstat_columns(metric_line, flagstat_metrics)
@@ -137,5 +138,5 @@ def generate(app, workorders):
                 qc_dir = QcDirectory(os.path.join(sample.analysis_gvcf_path, 'qc'))
                 if qc_dir.is_complete:
                     logger.info('Adding qc for {0}'.format(sample.analysis_gvcf_path))
-                    table.add(qc_dir.sample_name(), qc_dir)
+                    table.add(qc_dir.sample_name(), qc_dir, sample.ingest_sample_name)
     table.write(sys.stdout)
