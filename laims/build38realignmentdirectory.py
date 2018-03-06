@@ -1,7 +1,6 @@
 import glob
 import os
 import json
-import re
 import utils
 from logzero import logger
 
