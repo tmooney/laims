@@ -3,7 +3,7 @@ import os.path
 from logzero import logger
 from laims.limsdatabase import ReadCountInDb
 from laims.flagstat import Flagstat
-from laims.build38realignmentdirectory import InputJson
+from laims.build38realignmentdirectory import CramFile, InputJson
 
 
 class DirectoryValidator(object):
@@ -59,8 +59,13 @@ class B38DirectoryValidator(object):
         self.directory = directory
 
     def readcount_ok(self):
+        cram = CramFile(self.directory.cram_file())
+        seqids = cram.seqids()
         input_json = InputJson(self.directory.input_json())
-        seqids = input_json.seqids()
+        expected_seqids = input_json.bams()
+        if len(expected_seqids) != len(seqids):
+            logger.error("Number of BAMs in JSON {0} doesn't match readgroups in CRAM {1}".format(len(expected_seqids), len(seqids)))
+            return False
         unaligned_total = self.counter(seqids)
         flagstat = Flagstat(self.directory.flagstat_file())
         aligned_total = flagstat.read1 + flagstat.read2
