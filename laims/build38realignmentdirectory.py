@@ -43,7 +43,11 @@ class InputJson(object):
         return [ utils.id_for_readgroup_string(x[1]) for x in self.json_data['sequence']['analysis']['data']]
 
     def bams(self):
-        return [ x[0] for x in self.json_data['sequence']['analysis']['data']]
+        data_list = self.json_data['sequence']['analysis']['data']
+        if data_list[0][1].startswith('@RG'):
+            return [x[0] for x in data_list]
+        else:
+            return data_list[0]
 
 
 class Build38RealignmentDirectory(object):
