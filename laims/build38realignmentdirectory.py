@@ -2,6 +2,7 @@ import glob
 import os
 import json
 import re
+import utils
 from logzero import logger
 
 
@@ -10,24 +11,28 @@ class CramFile(object):
     def __init__(self, cram, samtools_path='/gscmnt/gc2802/halllab/ccdg_resources/bin/samtools-1.3.1'):
         self.cram = cram
         self.samtools_path = samtools_path
+        self._header = None
 
-    @staticmethod
-    def is_readgroup(string):
-        return string.startswith('@RG')
-
-    @staticmethod
-    def sm_tag_for_readgroup_string(rg_string):
-        sm_match = re.search(r'SM:(\S+)', rg_string)
-        return sm_match.group(1)
+    @property
+    def header(self):
+        if self._header is None:
+            self._header = os.popen('{samtools} view -H {cram}'.format(samtools=self.samtools_path, cram=self.cram))
+        return self._header
 
     def sm_tag(self):
-        header = os.popen('{samtools} view -H {cram}'.format(samtools=self.samtools_path, cram=self.cram))
         samples = set()
-        for line in header:
-            if self.is_readgroup(line):
-                samples.add(self.sm_tag_for_readgroup_string(line))
+        for line in self.header:
+            if utils.is_readgroup(line):
+                samples.add(utils.sm_tag_for_readgroup_string(line))
         assert(len(samples) == 1)
         return samples.pop()
+
+    def seqids(self):
+        seqids = list()
+        for line in self.header:
+            if utils.is_readgroup(line):
+                seqids.append(utils.id_for_readgroup_string(line))
+        return seqids
 
 
 class InputJson(object):
@@ -35,14 +40,8 @@ class InputJson(object):
         with open(input_json) as json_file:
             self.json_data = json.load(json_file)
 
-    @staticmethod
-    def id_for_readgroup_string(rg_string):
-        # ID:\d+
-        seqid_match = re.search(r'ID:(\d+)', rg_string)
-        return seqid_match.group(1)
-
     def seqids(self):
-        return [ self.id_for_readgroup_string(x[1]) for x in self.json_data['sequence']['analysis']['data']]
+        return [ utils.id_for_readgroup_string(x[1]) for x in self.json_data['sequence']['analysis']['data']]
 
     def bams(self):
         return [ x[0] for x in self.json_data['sequence']['analysis']['data']]
