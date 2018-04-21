@@ -72,7 +72,7 @@ class LsfJob(object):
                 )
 
     def _construct_cmd(self, cmd, cmd_options):
-        return self._construct_bsub(cmd_options) + ['bash -c "{0}"'.format(cmd)]
+        return self._construct_bsub(cmd_options) + ['/bin/bash -c "{0}"'.format(cmd)]
 
     def bsub_cmd(self, cmd, cmd_options):
         return ' '.join(self._construct_cmd(cmd, cmd_options))
