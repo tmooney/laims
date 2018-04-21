@@ -77,3 +77,11 @@ def generate_table(app, workorder):
     app.log_config()
     laims.commands.generate_qc_table.generate(app, workorder)
 
+@cli.command(name='reband', help='rerun haplotype caller with new default banding parameters')
+@click.argument('workorders', nargs=-1, type=int)
+@click.option('--output-dir')
+@click.pass_obj
+def launch_reband(app, output_dir, workorders):
+    from laims.commands.reband_gvcfs import reband
+    app.log_config()
+    reband(app, output_dir, workorders)
