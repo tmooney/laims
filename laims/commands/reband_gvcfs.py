@@ -1,9 +1,6 @@
 from __future__ import division
 
-from collections import defaultdict
 from crimson import verifybamid
-from logzero import logger
-import sys
 import os
 
 from laims.build38analysisdirectory import QcDirectory
