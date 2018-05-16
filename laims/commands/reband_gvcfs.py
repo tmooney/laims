@@ -241,7 +241,7 @@ def reband(app, output_dir, workorders):
     os.environ['LSF_NO_INHERIT_ENVIRONMENT'] = 'true'
     default_job_options = {
             'memory_in_gb': 18,
-            'queue': 'ccdg',
+            'queue': app.queue,
             'docker': 'registry.gsc.wustl.edu/genome/gatk-3.5-0-g36282e4:1',
             }
     if app.job_group is not None:
@@ -283,27 +283,29 @@ def reband(app, output_dir, workorders):
                     for chrom in chromosomes:
                         new_gzvcf = '{0}.{1}.g.vcf.gz'.format(sample_name, chrom)
                         output_gzvcf = os.path.join(reband_path, new_gzvcf)
-                        stdout = os.path.join(stdout_dir, new_gzvcf + '.rebanded.log')
-                        cmdline = cmd(cram_file, freemix_value, output_gzvcf, chrom)
-                        lsf_options = {
-                                'stdout': stdout,
-                                }
-                        job_runner.launch(cmdline, lsf_options)
+                        if not os.path.exists(output_gzvcf) or not os.path.exists(output_gzvcf + '.tbi'):
+                            stdout = os.path.join(stdout_dir, new_gzvcf + '.rebanded.log')
+                            cmdline = cmd(cram_file, freemix_value, output_gzvcf, chrom)
+                            lsf_options = {
+                                    'stdout': stdout,
+                                    }
+                            job_runner.launch(cmdline, lsf_options)
 
                     # do ext
                     chrom_string = ' -L '.join(ext_chromosomes)
                     new_gzvcf = '{0}.extChr.g.vcf.gz'.format(sample_name)
                     output_gzvcf = os.path.join(reband_path, new_gzvcf)
-                    script = os.path.join(reband_path, 'reband_extChr.sh')
-                    cmdline = cmd(cram_file, freemix_value, output_gzvcf, chrom_string)
-                    cmdline += ' && rm -f {0}'.format(script)
-                    with open(script, 'w') as f:
-                        f.write('#!/bin/bash\n')
-                        f.write(cmdline)
-                        f.write('\n')
-                    stdout = os.path.join(stdout_dir, new_gzvcf + '.rebanded.log')
-                    lsf_options = {
-                            'stdout': stdout,
-                            }
-                    job_runner.launch('/bin/bash {0}'.format(script), lsf_options)
+                    if not os.path.exists(output_gzvcf) or not os.path.exists(output_gzvcf + '.tbi'):
+                        script = os.path.join(reband_path, 'reband_extChr.sh')
+                        cmdline = cmd(cram_file, freemix_value, output_gzvcf, chrom_string)
+                        cmdline += ' && rm -f {0}'.format(script)
+                        with open(script, 'w') as f:
+                            f.write('#!/bin/bash\n')
+                            f.write(cmdline)
+                            f.write('\n')
+                        stdout = os.path.join(stdout_dir, new_gzvcf + '.rebanded.log')
+                        lsf_options = {
+                                'stdout': stdout,
+                                }
+                        job_runner.launch('/bin/bash {0}'.format(script), lsf_options)
 
