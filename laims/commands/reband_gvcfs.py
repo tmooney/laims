@@ -241,7 +241,7 @@ def reband(app, output_dir, workorders):
     os.environ['LSF_NO_INHERIT_ENVIRONMENT'] = 'true'
     default_job_options = {
             'memory_in_gb': 18,
-            'queue': 'ccdg',
+            'queue': app.queue,
             'docker': 'registry.gsc.wustl.edu/genome/gatk-3.5-0-g36282e4:1',
             }
     if app.job_group is not None:

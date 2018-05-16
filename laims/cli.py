@@ -6,12 +6,13 @@ from logzero import logger
 
 
 class LaimsApp(object):
-    def __init__(self, config=None, database=None, job_group=None):
+    def __init__(self, config=None, database=None, job_group=None, queue=None):
         '''
         This sets up common options for the application
         '''
         self.database = database
         self.job_group = job_group
+        self.queue = queue
         self.config_file = config
         if self.config_file is None:
             self.config_file = os.path.join(click.get_app_dir('laims'), 'config.json')
@@ -39,10 +40,11 @@ class LaimsApp(object):
 @click.option('--config', envvar='LAIMS_CONFIG_PATH')
 @click.option('--database', envvar='LAIMS_DB_PATH')
 @click.option('--job-group', default=None)
+@click.option('--queue', default='ccdg', type=click.Choice(['research-hpc', 'ccdg']))
 @click.version_option(version=laims.__version__, prog_name='laims', message='%(prog)s %(version)s')
 @click.pass_context
-def cli(ctx, config, database, job_group):
-    ctx.obj = LaimsApp(config, database, job_group)
+def cli(ctx, config, database, job_group, queue):
+    ctx.obj = LaimsApp(config, database, job_group, queue)
 
 @cli.command(help='ingest LIMS build38 realignment compute_workflow_execution csv')
 @click.argument('workorder_csv')

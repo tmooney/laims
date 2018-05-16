@@ -11,7 +11,7 @@ def ingest(app, csv_file, output_dir, force=False):
 
     default_job_options = {
         'memory_in_gb': 5,
-        'queue': 'research-hpc',
+        'queue': app.queue,
         'docker': 'registry.gsc.wustl.edu/genome/genome_perl_environment:23',
         }
     if app.job_group is not None:
