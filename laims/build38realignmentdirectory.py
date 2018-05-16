@@ -42,9 +42,11 @@ class InputJson(object):
     def seqids(self):
         return [ utils.id_for_readgroup_string(x[1]) for x in self.json_data['sequence']['analysis']['data']]
 
-    def bams(self):
+    def readgroups(self):
+        # Note that as of 4/25 we are seeing json with two fastqs instead of a uBAM
+        # In addition, we occasionally see json with no readgroup information at all
         data_list = self.json_data['sequence']['analysis']['data']
-        if data_list[0][1].startswith('@RG'):
+        if len(data_list[0]) in [2, 3] and data_list[0][-1].startswith('@RG'):
             return [x[0] for x in data_list]
         else:
             return data_list[0]
