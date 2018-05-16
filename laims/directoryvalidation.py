@@ -62,7 +62,7 @@ class B38DirectoryValidator(object):
         cram = CramFile(self.directory.cram_file())
         seqids = cram.seqids()
         input_json = InputJson(self.directory.input_json())
-        expected_seqids = input_json.bams()
+        expected_seqids = input_json.readgroups()
         if len(expected_seqids) != len(seqids):
             logger.error("Number of BAMs in JSON {0} doesn't match readgroups in CRAM {1}".format(len(expected_seqids), len(seqids)))
             return False
