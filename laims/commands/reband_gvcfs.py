@@ -240,7 +240,7 @@ class RebandandRewriteGvcfCmd(object):
 def reband(app, output_dir, workorders):
     os.environ['LSF_NO_INHERIT_ENVIRONMENT'] = 'true'
     default_job_options = {
-            'memory_in_gb': 18,
+            'memory_in_gb': 10,
             'queue': app.queue,
             'docker': 'registry.gsc.wustl.edu/genome/gatk-3.5-0-g36282e4:1',
             }
@@ -254,8 +254,8 @@ def reband(app, output_dir, workorders):
     Session = open_db(app.database)
     cmd = RebandandRewriteGvcfCmd(
             java='/usr/bin/java',
-            max_mem='16G',
-            max_stack='16G',
+            max_mem='8G',
+            max_stack='8G',
             gatk_jar='/opt/GenomeAnalysisTK.jar',
             reference='/gscmnt/gc2802/halllab/ccdg_resources/genomes/human/GRCh38DH/all_sequences.fa',
             break_multiple=1000000
