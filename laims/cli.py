@@ -87,3 +87,12 @@ def launch_reband(app, output_dir, workorders):
     from laims.commands.reband_gvcfs import reband
     app.log_config()
     reband(app, output_dir, workorders)
+
+@cli.command(name='oldband', help='rerun haplotype caller with old default banding parameters')
+@click.argument('workorders', nargs=-1, type=int)
+@click.option('--output-dir')
+@click.pass_obj
+def launch_oldband(app, output_dir, workorders):
+    from laims.commands.oldband_gvcfs import oldband
+    app.log_config()
+    reband(app, output_dir, workorders)
