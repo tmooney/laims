@@ -95,4 +95,4 @@ def launch_reband(app, output_dir, workorders):
 def launch_oldband(app, output_dir, workorders):
     from laims.commands.oldband_gvcfs import oldband
     app.log_config()
-    reband(app, output_dir, workorders)
+    oldband(app, output_dir, workorders)
