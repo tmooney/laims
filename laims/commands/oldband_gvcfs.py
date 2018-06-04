@@ -31,10 +31,10 @@ class OldbandandRewriteGvcfCmd(object):
                 break_multiple=str(break_multiple)
                 )
 
-    def __call__(self, input_file, freemix, output_file, chrom):
+    def __call__(self, input_file, output_file, chrom):
         temp_output1 = output_file + '.raw_hc.tmp.vcf.gz'
         temp_output2 = output_file + '.tmp.vcf.gz'
-        return self.cmd.format(input=input_file, freemix=freemix, output=output_file, temp_output1=temp_output1, temp_output2=temp_output2, chrom=chrom)
+        return self.cmd.format(input=input_file, output=output_file, temp_output1=temp_output1, temp_output2=temp_output2, chrom=chrom)
 
 def oldband(app, output_dir, workorders):
     os.environ['LSF_NO_INHERIT_ENVIRONMENT'] = 'true'
@@ -80,7 +80,7 @@ def oldband(app, output_dir, workorders):
                     output_gzvcf = os.path.join(oldband_path, new_gzvcf)
                     if not os.path.exists(output_gzvcf) or not os.path.exists(output_gzvcf + '.tbi'):
                         stdout = os.path.join(stdout_dir, new_gzvcf + '.oldbanded.log')
-                        cmdline = cmd(cram_file, freemix_value, output_gzvcf, chrom)
+                        cmdline = cmd(cram_file, output_gzvcf, chrom)
                         lsf_options = {
                                 'stdout': stdout,
                                 }
@@ -92,7 +92,7 @@ def oldband(app, output_dir, workorders):
                 output_gzvcf = os.path.join(oldband_path, new_gzvcf)
                 if not os.path.exists(output_gzvcf) or not os.path.exists(output_gzvcf + '.tbi'):
                     script = os.path.join(oldband_path, 'oldband_extChr.sh')
-                    cmdline = cmd(cram_file, freemix_value, output_gzvcf, chrom_string)
+                    cmdline = cmd(cram_file, output_gzvcf, chrom_string)
                     cmdline += ' && rm -f {0}'.format(script)
                     with open(script, 'w') as f:
                         f.write('#!/bin/bash\n')
