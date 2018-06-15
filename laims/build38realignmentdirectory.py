@@ -15,7 +15,7 @@ class CramFile(object):
     @property
     def header(self):
         if self._header is None:
-            self._header = os.popen('{samtools} view -H {cram}'.format(samtools=self.samtools_path, cram=self.cram))
+            self._header = [x for x in os.popen('{samtools} view -H {cram}'.format(samtools=self.samtools_path, cram=self.cram))]
         return self._header
 
     def sm_tag(self):
