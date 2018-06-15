@@ -115,6 +115,12 @@ class QcTable(object):
         gc_metrics = picard.parse(input_dir.picard_gc_bias_metrics_file())
         self.add_generic_picard_columns(metric_line, gc_metrics)
 
+        all_vc_metrics = picard.parse(input_dir.all_chrom_vc_detail_metrics())
+        self.add_generic_picard_columns(metric_line, all_vc_metrics, 'ALL')
+
+        x_vc_metrics = picard.parse(input_dir.X_chrom_vc_detail_metrics())
+        self.add_generic_picard_columns(metric_line, x_vc_metrics, 'CHRX')
+
         verifybamid_metrics = verifybamid.parse(input_dir.verifybamid_self_sample_file())
         self.add_freemix_column(metric_line, verifybamid_metrics)
 
