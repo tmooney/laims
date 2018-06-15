@@ -32,9 +32,12 @@ class QcTable(object):
                 self.header_order.append(key)
                 self.header_set.add(key)
 
-    def add_generic_picard_columns(self, line, metrics):
+    def add_generic_picard_columns(self, line, metrics, key_prefix=None):
         for key in metrics['metrics']['contents']:
-            self.add_to_metric_line(line, key, metrics['metrics']['contents'][key])
+            table_key = key
+            if key_prefix is not None:
+                table_key = '_'.join([key_prefix, key])
+            self.add_to_metric_line(line, table_key, metrics['metrics']['contents'][key])
 
     def add_picard_alignment_columns(self, line, alignment_metrics):
         for picard_line in alignment_metrics['metrics']['contents']:
@@ -102,6 +105,9 @@ class QcTable(object):
 
         dup_metrics = picard.parse(input_dir.picard_mark_duplicates_metrics_file())
         self.add_picard_markdup_columns(metric_line, dup_metrics)
+
+        ins_metrics = picard.parse(input_dir.picard_insert_size_metrics_file())
+        self.add_generic_picard_columns(metric_line, ins_metrics, 'INS')
 
         wgs_metrics = picard.parse(input_dir.picard_wgs_metrics_file())
         self.add_generic_picard_columns(metric_line, wgs_metrics)
