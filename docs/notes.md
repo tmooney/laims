@@ -102,5 +102,61 @@ $ tree /gscmnt/gc2758/analysis/ccdg/data/<sample-name>/
 
 The `sv` subdirectory is the result from running `laims call-sv`
 
+# Copying Over Data to the Cloud
 
+We upload in terms of work order sets, as they are smaller and easier to handle.
+
+## Get the sample list to copy
+
+    DBPATH=/gscmnt/gc2802/halllab/ccdg_resources/tracking/tracking.db
+    sqlite3 ${DBPATH}
+    sqlite3> .output /path/to/all_samples.tracking.txt
+    sqlite3> select * from csp_sample;
+
+Afterwards, we filter out the sample-name and gvcfs-paths that we'd like to copy over and place them into a directory like so:
+    
+    /gscmnt/gc2802/halllab/dlarson/jira/BIO-2169_Build38_Realign/cohort/upload_gvcf_batch6/<work-order>.tsv
+
+We use the `prepare_batch.pl` script :
+
+    cat /gscmnt/gc2802/halllab/dlarson/jira/BIO-2169_Build38_Realign/cohort/upload_gvcf_batch6/<work-order>.tsv | perl prepare_batch.pl
+    
+to 
+
+1.  create the `for_upload` directory inside the `upload_gvcf_batch6` directory.
+2.  create appropriate symlinks inside the `for_upload` directory
+
+Once the `for_upload` directory is setup, we can then run the `gsutil` command like so:
+
+   gsutil -m rsync -r ${PWD}/for_upload gs://bucket-name
+
+The `prepare_batch.pl` script looks like:
+
+```perl
+#!/usr/bin/perl
+
+use File::Spec;
+use File::Path qw( make_path );
+
+# expect lines from compute output
+
+my $root_dir = "/gscmnt/gc2802/halllab/dlarson/jira/BIO-2169_Build38_Realign/Finrisk/upload_gvcf_batch6/for_upload3/";
+my $cohort = "FINRISK";
+
+while(<>) {
+    chomp;
+    my @fields = split "\t", $_;
+    next if $fields[0] =~ /Sample/;
+    my ($sample, $output_directory) = @fields[0,1];
+    my $containing_dir = File::Spec->catfile($root_dir, $cohort, $sample, '');
+    my @output_files = glob(File::Spec->catfile($output_directory, $sample) . "*g.vcf.gz*");
+    make_path($containing_dir) or die "Unable to create directory $containing_dir\n";
+    for my $file (@output_files) {
+        `ln -s $file $containing_dir`;
+        if ($?) {
+            die "Unable to symlink $file to $containing_dir\n";
+        }
+    }
+}
+```
 [1]:  https://imp-lims.gsc.wustl.edu/entity/setup-work-order/2857106?Perspective=Compute_Workflow_Execution
