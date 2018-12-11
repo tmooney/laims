@@ -22,26 +22,31 @@ Then we get the QC pasing information from an email by Aye, Heather and/or Lee. 
 
     2857106.218.120718.qcpass.samplemap.tsv
 
-Then we identify the samples (the first column) that are good, and re-filter the `2857106.ComputeWorkflowExecution.completed.csv` file on those good sample to result in the final file that is supplied to the `liams ingest` command:
+Then we identify the samples (the first column) that are good, and re-filter the `2857106.ComputeWorkflowExecution.completed.csv` file on those good sample to result in the final file that is supplied to the `laims ingest` command:
  
     2857106.ComputeWorkflowExecution.qcpass.csv 
 
-## Running the `liams ingest` command
+## Running the `laims ingest` command
 
     # inside the genome perl docker image
     cd /tmp
-    git clone https://github.com/ernfrid/liams
-    cd liams
+    git clone https://github.com/ernfrid/laims
+    cd laims
     export PATH=/gscmnt/gc2802/halllab/idas/software/local/bin:$PATH
     pip install -e .
-    liams ingest \
+    laims ingest \
        --job-group <job-group> \  # limit to 200 (400 on weekends)
        --output-dir /gscmnt/gc2758/analysis/ccdg/data/path \
        /path/to/2857106.ComputeWorkflowExecution.qcpass.csv 
 
-### What `liams ingest` is doing
+### What `laims ingest` is doing
 
-Copies the CRAM, GVCFs, and QCs into the relevant `--output-dir` hall-lab directory.  An output directory will have the following template:
+1. Copies the CRAM, GVCFs, and QCs into the relevant `--output-dir` hall-lab directory.
+2. A sqlite3 database is updated and is located here:
+    
+        /gscmnt/gc2802/halllab/ccdg_resources/tracking/tracking.db
+  
+  An example output directory will have the following template:
 
 ```
 $ tree /gscmnt/gc2758/analysis/ccdg/data/<sample-name>/
@@ -95,6 +100,7 @@ $ tree /gscmnt/gc2758/analysis/ccdg/data/<sample-name>/
 3 directories, 87 files
 ```
 
-The `sv` subdirectory is the result from running `liams call-sv`
+The `sv` subdirectory is the result from running `laims call-sv`
+
 
 [1]:  https://imp-lims.gsc.wustl.edu/entity/setup-work-order/2857106?Perspective=Compute_Workflow_Execution
