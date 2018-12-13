@@ -159,4 +159,13 @@ while(<>) {
     }
 }
 ```
+
+# Re-banding
+
+The GVCFs produced in the LIMS production pipeline (for older pipelines) the `GQ` attribute inside the `FORMAT` field was originally banded to 3 levels (5, 20, and 60).  [See step 10 in the "Sequence Analysis Steps" in confluence](https://confluence.ris.wustl.edu/pages/viewpage.action?pageId=26968484).  We need this to be changed to this [(See step 10 in the new pipeline on confluence)](https://confluence.ris.wustl.edu/display/BIO/Proposed+CCDG+Analysis+Workflow+-+2017.7.14#?lucidIFH-viewer-89b394c=1).
+
+The following `laims` command will re-band old GVCFs into new GVCFs with the newer banding strategy:
+
+    laims reband <blah> <blah>  # something work order based
+
 [1]:  https://imp-lims.gsc.wustl.edu/entity/setup-work-order/2857106?Perspective=Compute_Workflow_Execution
