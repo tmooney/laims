@@ -77,3 +77,11 @@ def launch_oldband(app, output_dir, workorders):
     from laims.commands.oldband_gvcfs import oldband
     app.log_config()
     oldband(app, output_dir, workorders)
+
+@cli.command(name='verify-reband-gvcfs', help='verify that all the rebanded gvcfs exist on the filesystem')
+@click.option('--work-order', type=int, required=True)
+@click.option('--cohort-path', type=click.Path(exists=True), required=True)
+@click.pass_obj
+def verify_reband_gvcfs(app, work_order, cohort_path):
+    from laims.commands.verifications import verify_gvcfs
+    verify_gvcfs(app.database, work_order, cohort_path)
