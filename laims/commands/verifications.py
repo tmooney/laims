@@ -6,7 +6,7 @@ import textwrap
 
 def chromosomes():
     chroms = range(1, 23)
-    chroms.append('X', 'Y')
+    chroms.extend(['X', 'Y'])
     chroms = [ 'chr{}'.format(c) for c in chroms ]
     return chroms
 
@@ -25,7 +25,7 @@ def verify_gvcfs(database, work_order, cohort_path):
     conn = sqlite3.connect(database)
     c = conn.cursor()
     c.execute(sql, (work_order,))
-    data = c.fetchall()
+    data = [ d[0] for d in c.fetchall() ]
 
     for sample in data:
         sample_dir = os.path.join(cohort_path, sample)
@@ -36,7 +36,7 @@ def verify_gvcfs(database, work_order, cohort_path):
             continue
 
         if not os.path.isdir(reband_dir):
-            print("{}\t[warn] Did not find reband directory: {}".format(reband_dir))
+            print("{}\t[warn] Did not find reband directory: {}".format(sample, reband_dir))
             continue
 
         chroms = chromosomes()
