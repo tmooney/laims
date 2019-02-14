@@ -10,6 +10,25 @@ def chromosomes():
     chroms = [ 'chr{}'.format(c) for c in chroms ]
     return chroms
 
+def verify_timestamps(sample, gvcf, tbi):
+    if os.path.getmtime(gvcf) > os.path.getmtime(tbi):
+        msg = ("{sample}\t[warn] "
+               "GVCF ({gvcf}) is newer than TBI ({tbi}) "
+               "-- please investigate!")
+        msg.format(sample=sample, gvcf=gvcf, tbi=tbi)
+        print(msg)
+
+def verify_gvcfs_and_tbi_existance(sample, reband_gvcf, reband_tbi, chrom):
+    for f in (reband_gvcf, reband_tbi):
+        result = 'EXISTS' if os.path.exists(f) else 'MISSING'
+        msg = "{sample}\t{c}\t{path}\t{result}".format(
+            sample=sample,
+            c=chrom,
+            path=f,
+            result=result
+        )
+        print(msg)
+
 def verify_gvcfs(database, work_order, cohort_path):
     sql = textwrap.dedent("""
         select ingest_sample_name
@@ -46,22 +65,5 @@ def verify_gvcfs(database, work_order, cohort_path):
             reband_gvcf = os.path.join(reband_dir, gvcf)
             reband_tbi = os.path.join(reband_dir, tbi)
 
-            for f in (reband_gvcf, reband_tbi):
-                result = 'EXISTS' if os.path.exists(f) else 'MISSING'
-                msg = "{sample}\t{c}\t{path}\t{result}".format(
-                    sample=sample,
-                    c=c,
-                    path=f,
-                    result=result
-                )
-                print(msg)
-
-            if os.path.getmtime(reband_gvcf) > os.path.getmtime(reband_tbi):
-                msg = ("{sample}\t[warn] "
-                       "GVCF ({gvcf}) is newer than TBI ({tbi}) "
-                       "-- please investigate!")
-                msg.format(
-                    sample=sample,
-                    gvcf=reband_gvcf,
-                    tbi=reband_tbi
-                )
+            verify_gvcfs_and_tbi_existance(sample, reband_gvcf, reband_tbi, c)
+            verify_timestamps(sample, reband_gvcf, reband_tbi)
