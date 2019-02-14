@@ -55,3 +55,13 @@ def verify_gvcfs(database, work_order, cohort_path):
                     result=result
                 )
                 print(msg)
+
+            if os.path.getmtime(reband_gvcf) > os.path.getmtime(reband_tbi):
+                msg = ("{sample}\t[warn] "
+                       "GVCF ({gvcf}) is newer than TBI ({tbi}) "
+                       "-- please investigate!")
+                msg.format(
+                    sample=sample,
+                    gvcf=reband_gvcf,
+                    tbi=reband_tbi
+                )
