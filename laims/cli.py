@@ -85,3 +85,12 @@ def launch_oldband(app, output_dir, workorders):
 def verify_reband_gvcfs(app, work_order, cohort_path):
     from laims.commands.verifications import verify_gvcfs
     verify_gvcfs(app.database, work_order, cohort_path)
+
+@cli.command(name='verify-gvcf', help='verify a GVCF with GATK ValidateVariants')
+@click.option('--gvcf-path', help='Path to the GVCF', type=click.Path(exists=True), required=True)
+@click.option('--reference-path', help='Path to the reference sequence', default="/gscmnt/gc2802/halllab/ccdg_resources/genomes/human/GRCh38DH/all_sequences.fa", type=click.Path(exists=True), required=True)
+@click.option('--interval', help='The interval that was used to create the GVCF', type=str, required=True)
+@click.pass_obj
+def launch_verify_gvcf(app, gvcf_path, reference_path, interval):
+    from laims.commands.verify_gvcf import verify_gvcf
+    verify_gvcf(gvcf_path, reference_path, interval)
