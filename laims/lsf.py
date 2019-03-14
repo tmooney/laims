@@ -1,5 +1,5 @@
 import subprocess
-
+from functools import reduce
 
 class BsubOption(object):
     def __init__(self, key, option_flag):
@@ -81,5 +81,6 @@ class LsfJob(object):
         return self.bsub_cmd(cmd, cmd_options)
 
     def launch(self, cmd, cmd_options):
-        print self.dry_run(cmd, cmd_options)
-        return subprocess.call(self._construct_cmd(cmd, cmd_options))
+        print(self.dry_run(cmd, cmd_options))
+        subprocess.check_call(self._construct_cmd(cmd, cmd_options))
+
