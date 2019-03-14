@@ -14,15 +14,24 @@ def verify_bulk_gvcfs(tsv_path, reference_path):
         'queue': 'ccdg',
         'docker': 'broadinstitute/gatk:4.0.6.0',
         'group': '/apipe-builder/verify-gvcf',
+        'email': 'ebelter@wustl.edu',
     }
     job_runner=LsfJob(job_opts)
 
     with open(tsv_path) as f:
         reader = csv.reader(f, delimiter='\t')
         for row in reader:
-            # TWAM-App282Req70_04112.chr22.parsed.g.vcf.gz 
-            tokens = os.path.basename(row[0]).split('.')
-            interval = tokens[-5]
+            interval = get_interval_from_path(row[0])
             cmd = [ "laims", "verify-gvcf", "--gvcf-path", row[0], "--reference", reference_path, "--interval", interval ]
-            print(job_runner.dry_run(cmd, {}))
-            #job_runner.launch(cmd)
+            #print(job_runner.dry_run(cmd, {}))
+            job_runner.launch(cmd, {})
+
+
+chromosomes = [ 'chr{}'.format(c) for c in range(1,23) ]
+chromosomes.extend(['chrX', 'chrY'])
+def get_interval_from_path(path):
+    for t in os.path.basename(path).split('.'):
+        for c in chromosomes:
+            if t == c: return c
+    raise 'Failed to get interval from file name: {}'.foramt(path)
+
