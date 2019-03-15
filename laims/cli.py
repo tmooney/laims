@@ -120,4 +120,4 @@ def launch_verify_gvcf(app, gvcf_path, reference_path, interval):
 @click.pass_obj
 def launch_verify_bulk_gvcfs(app, tsv_path, reference_path):
     from laims.commands.verify_bulk_gvcfs import verify_bulk_gvcfs
-    verify_bulk_gvcfs(tsv_path, reference_path)
+    verify_bulk_gvcfs(app, tsv_path, reference_path)
