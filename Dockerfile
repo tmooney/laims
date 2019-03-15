@@ -1,4 +1,8 @@
-# Basded on ... told by Broad to use this version
+#########
+# LAIMS #
+#########
+
+# Based on ... told by Broad to use this version
 FROM broadinstitute/gatk:4.0.6.0
 
 # MAINTAINER
@@ -12,18 +16,20 @@ RUN apt-get update -qq && \
         vim
 
 # Install LAIMS
-#WORKDIR /tmp/laims
-WORKDIR /app/laims
+RUN pip install --upgrade pip
+WORKDIR /tmp/laims
 COPY . ./
-RUN pip install --upgrade pip && \
-    pip install -e /app/laims .
-RUN find . -type d -exec chmod 777 {} \; && \
-      find . -type f -exec chmod 666 {} \;
+RUN pip install .
+
+# BASH PROFILE
+WORKDIR /etc/profile.d/
+COPY /etc/profile.d/laims.sh ./
 
 # CLEANUP
 WORKDIR /
-#RUN rm -rf /tmp/laims/
+RUN rm -rf /tmp/laims/
 
 # ENV
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
+ENV MGI_NO_GAPP=1
