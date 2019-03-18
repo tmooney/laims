@@ -13,9 +13,8 @@ def verify_bulk_gvcfs(app, tsv_path, reference_path):
         'memory_in_gb': 10,
         'queue': app.queue,
         'docker': 'registry.gsc.wustl.edu/ebelter/laims:latest',
-        'group': '/apipe-builder/verify-gvcf',
-        'email': 'ebelter@wustl.edu',
     }
+    if app.job_group is not None: job_opts['group'] = app.job_group
     job_runner=LsfJob(job_opts)
 
     with open(tsv_path) as f:
@@ -31,7 +30,7 @@ chromosomes = [ 'chr{}'.format(c) for c in range(1,23) ]
 chromosomes.extend(['chrX', 'chrY'])
 def get_interval_from_path(path):
     for t in os.path.basename(path).split('.'):
-        if t == 'extChr': return "/gscmnt/gc2802/halllab/ccdg_resources/genomes/human/GRCh38DH/extChr.list"
+        if t == 'extChr': return "/gscmnt/gc2802/halllab/ccdg_resources/genomes/human/GRCh38DH/all_sequences.filtered-chromosome.list.ext"
         for c in chromosomes:
             if t == c: return c
     raise 'Failed to get interval from file name: {}'.format(path)
