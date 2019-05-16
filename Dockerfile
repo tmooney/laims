@@ -1,21 +1,36 @@
-FROM ubuntu:16.04
-LABEL maintainer "Dave Larson <delarson@wustl.edu>"
-LABEL description="Lame analysis information management system"
+#########
+# LAIMS #
+#########
 
-COPY . /tmp/src
+# Based on ... told by Broad to use this version
+FROM broadinstitute/gatk:4.0.6.0
 
-RUN apt-get update -qq \
-    && apt-get -y install apt-transport-https \
-    && apt-get update -qq \
-    && apt-get -y install --no-install-recommends \
+# MAINTAINER
+LABEL maintainer ebelter@wustl.edu
+
+# DEPS
+RUN apt-get update -qq && \
+    apt-get -y install --no-install-recommends \
+        apt-transport-https \
         libnss-sss \
-        python \
-        python-pip \
-    && pip install --upgrade pip \
-    && pip install setuptools wheel \
-    && cd /tmp/src \
-    && pip install --process-dependency-links . \
-    && rm -rf /var/lib/apt/lists/* \
-    && rm -rf /tmp/src
+        mysql-server \
+        vim
 
-CMD ["/bin/bash"]
+# Install LAIMS
+RUN pip install --upgrade pip
+WORKDIR /tmp/laims
+COPY . ./
+RUN pip install .
+
+# BASH PROFILE
+WORKDIR /etc/profile.d/
+COPY /etc/profile.d/laims.sh ./
+
+# CLEANUP
+WORKDIR /
+RUN rm -rf /tmp/laims/
+
+# ENV
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
+ENV MGI_NO_GAPP=1
