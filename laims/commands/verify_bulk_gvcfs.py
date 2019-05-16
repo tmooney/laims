@@ -13,6 +13,7 @@ def verify_bulk_gvcfs(app, tsv_path, reference_path):
         'memory_in_gb': 10,
         'queue': app.queue,
         'docker': 'registry.gsc.wustl.edu/ebelter/laims:latest',
+        "stdout": "/dev/null",
     }
     if app.job_group is not None: job_opts['group'] = app.job_group
     job_runner=LsfJob(job_opts)
