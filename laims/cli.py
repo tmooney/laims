@@ -4,37 +4,44 @@ import click
 import laims
 from logzero import logger
 
-
 class LaimsApp(object):
-    def __init__(self, config=None, database=None, job_group=None, queue=None):
+    def __init__(self, config_file=None, database=None, job_group=None, queue=None):
         '''
         This sets up common options for the application
         '''
         self.database = database
         self.job_group = job_group
         self.queue = queue
-        self.config_file = config
-        if self.config_file is None:
+        self.config_file = config_file
+        self.config = {}
+        if config_file and not os.path.exists(config_file):
+            raise Exception("Given config file {} does not exist!".fotrmat(confiog_file))
+        else self.config_file is None:
+            default_config
+            if os.path.join(click.get_app_dir('laims'), 'config.json'):
             self.config_file = os.path.join(click.get_app_dir('laims'), 'config.json')
         self._load_config()
+
+    def get_config(self, name):
+        if name in self.config:
+            return self.config[name]
+        return None
+
+    def _load_config(self):
+        if not os.path.exists(self.config_file):
+            logger.error('No configuration file found at {0}'.format(self.config_file))
+            return
+            
+        with open(self.config_file) as f:
+            self.config = json.load(f)
+        self.database = self.get_config('database')
+        self.job_group = self.get_config('job_group')
 
     def log_config(self):
         logger.info('Using config at {0}'.format(self.config_file))
         logger.info('Using database at {0}'.format(self.database))
 
-    def _load_attr_from_config(self, name, json_data):
-        if getattr(self, name) is None and name in json_data:
-            setattr(self, name, json_data[name])
-
-    def _load_config(self):
-        if os.path.exists(self.config_file):
-            with open(self.config_file) as cfg:
-                json_data = json.load(cfg)
-                self._load_attr_from_config('database', json_data)
-                self._load_attr_from_config('job_group', json_data)
-        else:
-            logger.error('No configuration file found at {0}'.format(self.config_file))
-
+#-- LaimsApp
 
 @click.group()
 @click.option('--config', envvar='LAIMS_CONFIG_PATH')
@@ -44,7 +51,7 @@ class LaimsApp(object):
 @click.version_option(version=laims.__version__, prog_name='laims', message='%(prog)s %(version)s')
 @click.pass_context
 def cli(ctx, config, database, job_group, queue):
-    ctx.obj = LaimsApp(config, database, job_group, queue)
+    ctx.obj = LaimsApp(config_file=config, database=database, job_group=job_group, queue=queue)
 
 @cli.command(help='ingest LIMS build38 realignment compute_workflow_execution csv')
 @click.argument('workorder_csv')
