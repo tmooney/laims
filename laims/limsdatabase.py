@@ -39,5 +39,4 @@ class ReadCountInDb(object):
         output = self.get_read_counts(ids)
         if output:
             total = sum([ int(row['filt_clusters']) for row in output ])
-        import pdb; pdb.set_trace()
         return total
