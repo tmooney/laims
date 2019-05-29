@@ -11,6 +11,9 @@ setup(
         'SQLAlchemy==1.1.11',
         'Crimson>0.3.0',
         'logzero==1.3.1',
+        'dataset==1.1.2',
+        'psycopg2-binary==2.8.2',
+        'Jinja2==2.10.1'
     ],
     dependency_links=['https://github.com/ernfrid/crimson/tarball/verifybamid#egg=Crimson-0.4.0'],
     entry_points={
