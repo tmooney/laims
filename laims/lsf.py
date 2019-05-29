@@ -1,6 +1,8 @@
 import subprocess
 from functools import reduce
 
+from logzero import logger
+
 class BsubOption(object):
     def __init__(self, key, option_flag):
         self.key = key
@@ -83,5 +85,7 @@ class LsfJob(object):
 
     def launch(self, cmd, cmd_options):
         print(self.dry_run(cmd, cmd_options))
-        subprocess.check_call(self._construct_cmd(cmd, cmd_options))
+        final_cmd = self._construct_cmd(cmd, cmd_options)
+        logger.info("Exec CMD: {}".format(' '.join(final_cmd)))
+        subprocess.check_call(final_cmd)
 
