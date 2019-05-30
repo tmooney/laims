@@ -30,6 +30,10 @@ class LaimsApp(object):
             return LaimsApp.context.config[name]
         return None
 
+    def __setattr__(self, name, val=None):
+        LaimsApp.context.config[name] = val
+        return LaimsApp.context.config[name]
+
     @staticmethod
     def load_config(config_file):
         if not os.path.exists(config_file):

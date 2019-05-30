@@ -22,7 +22,8 @@ class LaimsAppTest(unittest.TestCase):
         self.assertEqual(laimsapp.config_file, os.path.join("tests", "test_app", "laims.json"))
         self.assertEqual(laimsapp.environment, 'test')
         self.assertEqual(laimsapp.database, 'NOTDB')
-        self.assertIsNone(laimsapp.blah)
+        self.assertIsNone(laimsapp.foo)
+        laimsapp.foo = "bar"
      
     def test3_reinit_fails(self):
         with self.assertRaisesRegexp(Exception, "Attempting to reinitialize LAIMS App!"):
