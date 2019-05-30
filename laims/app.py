@@ -22,8 +22,8 @@ class LaimsApp(object):
 #-- __LaimsAppSingleton            
 
     def __init__(self, config_file=None, config={}):
-        if LaimsApp.context: raise Exception("Attempting to reinitialize LAIMS App!")
-        LaimsApp.context = LaimsApp.__LaimsAppSingleton(config_file=config_file, config=config)
+        if LaimsApp.context is None:
+            LaimsApp.context = LaimsApp.__LaimsAppSingleton(config_file=config_file, config=config)
 
     def __getattr__(self, name):
         if name in LaimsApp.context.config:
@@ -48,5 +48,17 @@ class LaimsApp(object):
     def log_config(self):
         logger.info('Using config at {0}'.format(self.config_file))
         logger.info('Using database at {0}'.format(self.database))
+
+    def lims_db_connection(self):
+        if self.lims_db:
+           return self.lims_db
+        lims_db_url = self.lims_db_url
+        if lims_db_url is None:
+            raise Exception("No lims_db_url set in config! Cannot connect to LIMS DB!")
+        if lims_db_url.startswith('sqlite'):
+            self.lims_db = dataset.connect(lims_db_url)
+        else:
+            self.lims_db = dataset.connect(lims_db_url, schema='gsc')
+        return self.lims_db
 
 #-- LaimsApp

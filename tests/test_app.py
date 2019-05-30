@@ -22,12 +22,21 @@ class LaimsAppTest(unittest.TestCase):
         self.assertEqual(laimsapp.config_file, os.path.join("tests", "test_app", "laims.json"))
         self.assertEqual(laimsapp.environment, 'test')
         self.assertEqual(laimsapp.database, 'NOTDB')
+        self.assertEqual(laimsapp.lims_db_url, 'sqlite:///:memory:')
         self.assertIsNone(laimsapp.foo)
+
+        # __setattr__
         laimsapp.foo = "bar"
+        self.assertEqual(laimsapp.foo, "bar")
      
-    def test3_reinit_fails(self):
-        with self.assertRaisesRegexp(Exception, "Attempting to reinitialize LAIMS App!"):
-            laimsapp = LaimsApp()
+    def test3_lims_db(self):
+        laimsapp = LaimsApp()
+        lims_db_url = laimsapp.lims_db_url
+        self.assertIsNotNone(lims_db_url);
+        LaimsApp.lims_db_url = None
+        self.assertIsNone(laimsapp.lims_db_url)
+        with self.assertRaisesRegexp(Exception, "No lims_db_url"):
+            laimsapp.lims_db_connection()
 
 # -- LaimsAppTest
 
