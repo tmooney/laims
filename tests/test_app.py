@@ -23,12 +23,13 @@ class LaimsAppTest(unittest.TestCase):
         self.assertEqual(laimsapp.environment, 'test')
         self.assertEqual(laimsapp.database, 'NOTDB')
         self.assertEqual(laimsapp.lims_db_url, 'sqlite:///:memory:')
-        self.assertIsNone(laimsapp.foo)
 
         # __setattr__
+        self.assertIsNone(laimsapp.foo)
         laimsapp.foo = "bar"
         self.assertEqual(laimsapp.foo, "bar")
-     
+        self.assertEqual(LaimsApp().foo, "bar")
+
     def test3_lims_db(self):
         laimsapp = LaimsApp()
         lims_db_url = laimsapp.lims_db_url
