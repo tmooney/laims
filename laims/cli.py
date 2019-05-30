@@ -1,47 +1,10 @@
 import os.path
 import json
 import click
-import laims
 from logzero import logger
 
-class LaimsApp(object):
-    def __init__(self, config_file=None, database=None, job_group=None, queue=None):
-        '''
-        This sets up common options for the application
-        '''
-        self.database = database
-        self.job_group = job_group
-        self.queue = queue
-        self.config_file = config_file
-        self.config = {}
-        if config_file and not os.path.exists(config_file):
-            raise Exception("Given config file {} does not exist!".fotrmat(confiog_file))
-        else self.config_file is None:
-            default_config
-            if os.path.join(click.get_app_dir('laims'), 'config.json'):
-            self.config_file = os.path.join(click.get_app_dir('laims'), 'config.json')
-        self._load_config()
-
-    def get_config(self, name):
-        if name in self.config:
-            return self.config[name]
-        return None
-
-    def _load_config(self):
-        if not os.path.exists(self.config_file):
-            logger.error('No configuration file found at {0}'.format(self.config_file))
-            return
-            
-        with open(self.config_file) as f:
-            self.config = json.load(f)
-        self.database = self.get_config('database')
-        self.job_group = self.get_config('job_group')
-
-    def log_config(self):
-        logger.info('Using config at {0}'.format(self.config_file))
-        logger.info('Using database at {0}'.format(self.database))
-
-#-- LaimsApp
+import laims
+from laims.app import LaimsApp
 
 @click.group()
 @click.option('--config', envvar='LAIMS_CONFIG_PATH')
@@ -51,7 +14,18 @@ class LaimsApp(object):
 @click.version_option(version=laims.__version__, prog_name='laims', message='%(prog)s %(version)s')
 @click.pass_context
 def cli(ctx, config, database, job_group, queue):
-    ctx.obj = LaimsApp(config_file=config, database=database, job_group=job_group, queue=queue)
+    conf = {
+            "database": database,
+            "job_group": job_group,
+            "queue": queue,
+            }
+    ctx.obj = LaimsApp(config_file=config, config=conf)
+
+@cli.command(help='TEST')
+@click.pass_obj
+def test(app):
+    print("TESTING\n")
+    app.log_config()
 
 @cli.command(help='ingest LIMS build38 realignment compute_workflow_execution csv')
 @click.argument('workorder_csv')
