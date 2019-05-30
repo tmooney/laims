@@ -1,6 +1,5 @@
 import subprocess
 from functools import reduce
-
 from logzero import logger
 
 class BsubOption(object):
@@ -89,3 +88,4 @@ class LsfJob(object):
         logger.info("Exec CMD: {}".format(' '.join(final_cmd)))
         subprocess.check_call(final_cmd)
 
+#-- LsfJob
