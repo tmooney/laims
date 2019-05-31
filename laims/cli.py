@@ -7,7 +7,7 @@ import laims
 from laims.app import LaimsApp
 
 @click.group()
-@click.option('--config', envvar='LAIMS_CONFIG_PATH')
+@click.option('--config', envvar='LAIMS_CONFIG')
 @click.option('--database', envvar='LAIMS_DB_PATH')
 @click.option('--job-group', default=None)
 @click.option('--queue', default='ccdg', type=click.Choice(['research-hpc', 'ccdg']))

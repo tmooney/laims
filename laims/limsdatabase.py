@@ -18,8 +18,8 @@ class ReadCountInDb(object):
 
         template = Template(sql)
         rendered_sql = template.render(seq_ids=read_groups)
-        db_connection = LaimsApp().lims_database_connection()
-        result = db_connection.query(rendered_sql)
+        db = LaimsApp().lims_db_connection()
+        result = db.query(rendered_sql)
         data = [ { 'seq_id' : row['seq_id'],
                    'filt_clusters' : row['total_clusters'] } for row in result ]
         return data

@@ -1,9 +1,7 @@
-import glob
-import os
-import json
-import utils
+import glob, json, os
 from logzero import logger
 
+from laims import utils
 
 class CramFile(object):
 
