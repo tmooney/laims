@@ -1,4 +1,4 @@
-import click, json, os
+import click, dataset, json, os
 from logzero import logger
 
 class LaimsApp(object):
