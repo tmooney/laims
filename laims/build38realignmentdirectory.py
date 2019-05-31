@@ -99,7 +99,7 @@ class Build38RealignmentDirectory(object):
         rv = num_expected_files == num_actual_files
         if rv == False:
             msg = "File count check mismatch: file type: '{}' -- expected : {} found : {}"
-            msg = msg.format(glob_string, num_expected_files, num_actual_files))
+            msg = msg.format(glob_string, num_expected_files, num_actual_files)
             logger.error(msg)
         return rv
 
