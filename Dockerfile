@@ -13,7 +13,6 @@ RUN apt-get update -qq && \
     apt-get -y install --no-install-recommends \
         apt-transport-https \
         libnss-sss \
-        mysql-server \
         vim
 
 # Install LAIMS
@@ -22,15 +21,20 @@ WORKDIR /tmp/laims
 COPY . ./
 RUN pip install .
 
+WORKDIR /etc/laims/
+COPY prod.json ./
+
 # BASH PROFILE
 WORKDIR /etc/profile.d/
 COPY /etc/profile.d/laims.sh ./
 
 # CLEANUP
-WORKDIR /
-RUN rm -rf /tmp/laims/
+WORKDIR /tmp/
+RUN rm -rf laims/
 
 # ENV
-ENV LC_ALL=C.UTF-8
-ENV LANG=C.UTF-8
-ENV MGI_NO_GAPP=1
+ENV LC_ALL=C.UTF-8 \
+    LANG=C.UTF-8 \
+    MGI_NO_GAPP=1 \
+    LAIMS_CONFIG=/etc/laims/prod.json
+WORKDIR /
