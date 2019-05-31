@@ -66,7 +66,7 @@ class Build38RealignmentDirectory(object):
             "flagstat.out": 1,
             "insert_size*": 2,
             "mark_dups_metrics.txt": 1,
-            "verify_bam_id*": 4,
+            "*verify_bam_id*": [4, 5],  # 4 files for old-style CCDG project case; 5 files for TopMed project case
             "wgs_metric_summary.txt": 1,
             "alignment_summary.txt": 1,
             "GC_bias*": 3,
@@ -86,6 +86,23 @@ class Build38RealignmentDirectory(object):
             glob_files = glob.glob(os.path.join(self.path, glob_string))
             self.output_file_dict[glob_string] = glob_files
 
+    def _is_file_count_correct(glob_string, num_expected, input_files):
+        if glob_string == '*verify_bam_id*':
+            file_basenames = [os.path.basename(i) for i in input_files].sort()
+            # TopMed verify_bam_id outputs have a 'GT' prefix on the '*.depthRG' files
+            # CCDG verify_bam_id outputs do not have a 'GT' prefix on the '*.depthRG' files
+            num_expected_files = num_expected[0] if file_basenames[0].startswith('GT') else num_expected[1]
+        else:
+            num_expected_files = num_expected
+
+        num_actual_files = len(input_files)
+        rv = num_expected_files == num_actual_files
+        if rv == False:
+            msg = "File count check mismatch: file type: '{}' -- expected : {} found : {}"
+            msg = msg.format(glob_string, num_expected_files, num_actual_files)
+            logger.error(msg)
+        return rv
+
     def complete(self):
         # NOTE - it would be cool to have a decorator for methods like this
         # that require the calling of some other method in the class
@@ -95,7 +112,12 @@ class Build38RealignmentDirectory(object):
             if self.output_file_dict is None:
                 self._collect_output_file_dict()
             for glob_string, num_expected in Build38RealignmentDirectory._expectations.iteritems():
-                if not num_expected == len(self.output_file_dict[glob_string]):
+                file_count_check = self._is_file_count_correct(
+                    glob_string,
+                    num_expected,
+                    self.output_file_dict[glob_string]
+                )
+                if file_count_check == False:
                     self.is_complete = False
                     logger.error("Missing files matching {0}\n".format(glob_string))
                     return self.is_complete
@@ -161,7 +183,7 @@ class Build38RealignmentDirectory(object):
             "flagstat.out",
             "insert_size*",
             "mark_dups_metrics.txt",
-            "verify_bam_id*",
+            "*verify_bam_id*",
             "wgs_metric_summary.txt",
             "alignment_summary.txt",
             "GC_bias*",

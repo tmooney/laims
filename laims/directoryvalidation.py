@@ -61,6 +61,7 @@ class B38DirectoryValidator(object):
     def readcount_ok(self):
         cram = CramFile(self.directory.cram_file())
         seqids = cram.seqids()
+        logger.info("Input JSON: {}".format(self.directory.input_json()))
         input_json = InputJson(self.directory.input_json())
         expected_seqids = input_json.readgroups()
         if len(expected_seqids) != len(seqids):
@@ -68,10 +69,11 @@ class B38DirectoryValidator(object):
             return False
         unaligned_total = self.counter(seqids)
         flagstat = Flagstat(self.directory.flagstat_file())
+        logger.info("Flagstats: {}".format(self.directory.flagstat_file()))
         aligned_total = flagstat.read1 + flagstat.read2
         rv = aligned_total == unaligned_total
         if not rv:
-            logger.error("Aligned total bp doesn't match unaligned total bp")
+            logger.error("Aligned total bp ({}) doesn't match unaligned total bp ({})".format(aligned_total, unaligned_total))
         return rv
 
     def sm_tag_ok(self):

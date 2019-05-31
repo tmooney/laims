@@ -1,40 +1,10 @@
 import os.path
 import json
 import click
-import laims
 from logzero import logger
 
-
-class LaimsApp(object):
-    def __init__(self, config=None, database=None, job_group=None, queue=None):
-        '''
-        This sets up common options for the application
-        '''
-        self.database = database
-        self.job_group = job_group
-        self.queue = queue
-        self.config_file = config
-        if self.config_file is None:
-            self.config_file = os.path.join(click.get_app_dir('laims'), 'config.json')
-        self._load_config()
-
-    def log_config(self):
-        logger.info('Using config at {0}'.format(self.config_file))
-        logger.info('Using database at {0}'.format(self.database))
-
-    def _load_attr_from_config(self, name, json_data):
-        if getattr(self, name) is None and name in json_data:
-            setattr(self, name, json_data[name])
-
-    def _load_config(self):
-        if os.path.exists(self.config_file):
-            with open(self.config_file) as cfg:
-                json_data = json.load(cfg)
-                self._load_attr_from_config('database', json_data)
-                self._load_attr_from_config('job_group', json_data)
-        else:
-            logger.error('No configuration file found at {0}'.format(self.config_file))
-
+import laims
+from laims.app import LaimsApp
 
 @click.group()
 @click.option('--config', envvar='LAIMS_CONFIG_PATH')
@@ -44,7 +14,18 @@ class LaimsApp(object):
 @click.version_option(version=laims.__version__, prog_name='laims', message='%(prog)s %(version)s')
 @click.pass_context
 def cli(ctx, config, database, job_group, queue):
-    ctx.obj = LaimsApp(config, database, job_group, queue)
+    conf = {
+            "database": database,
+            "job_group": job_group,
+            "queue": queue,
+            }
+    ctx.obj = LaimsApp(config_file=config, config=conf)
+
+@cli.command(help='TEST')
+@click.pass_obj
+def test(app):
+    print("TESTING\n")
+    app.log_config()
 
 @cli.command(help='ingest LIMS build38 realignment compute_workflow_execution csv')
 @click.argument('workorder_csv')
