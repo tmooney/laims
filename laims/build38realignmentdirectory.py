@@ -66,7 +66,7 @@ class Build38RealignmentDirectory(object):
             "flagstat.out": 1,
             "insert_size*": 2,
             "mark_dups_metrics.txt": 1,
-            "*verify_bam_id*": [4, 5],  # 4 files for old-style CCDG project case; 4 files for TopMed project case
+            "*verify_bam_id*": [4, 5],  # 4 files for old-style CCDG project case; 5 files for TopMed project case
             "wgs_metric_summary.txt": 1,
             "alignment_summary.txt": 1,
             "GC_bias*": 3,
