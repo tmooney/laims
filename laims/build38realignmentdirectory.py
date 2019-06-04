@@ -110,10 +110,13 @@ class Build38RealignmentDirectory(object):
             if self.output_file_dict is None:
                 self._collect_output_file_dict()
             for (glob_string, num_expected) in Build38RealignmentDirectory._expectations.items():
+                logger.info("File checking on: {}".format(glob_string))
+                output_files = self.output_file_dict[glob_string]
+                logger.info("The directory files are:\n{}".format('\n'.join(output_files)))
                 file_count_check = self._is_file_count_correct(
                     glob_string,
                     num_expected,
-                    self.output_file_dict[glob_string]
+                    output_files
                 )
                 if file_count_check == False:
                     self.is_complete = False
