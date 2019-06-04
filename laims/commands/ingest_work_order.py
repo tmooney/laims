@@ -12,7 +12,7 @@ def ingest(app, csv_file, output_dir, force=False):
     default_job_options = {
         'memory_in_gb': 5,
         'queue': app.queue,
-        'docker': 'registry.gsc.wustl.edu/genome/genome_perl_environment:23',
+        'docker': 'registry.gsc.wustl.edu/genome/genome_perl_environment',
         }
     if app.job_group is not None:
         default_job_options['group'] = app.job_group
