@@ -109,7 +109,7 @@ class Build38RealignmentDirectory(object):
         else:
             if self.output_file_dict is None:
                 self._collect_output_file_dict()
-            for glob_string, num_expected in Build38RealignmentDirectory._expectations.iteritems():
+            for (glob_string, num_expected) in Build38RealignmentDirectory._expectations.items():
                 file_count_check = self._is_file_count_correct(
                     glob_string,
                     num_expected,
