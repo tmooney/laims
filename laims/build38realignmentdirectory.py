@@ -89,7 +89,7 @@ class Build38RealignmentDirectory(object):
             file_basenames = sorted([os.path.basename(i) for i in input_files])
             # TopMed verify_bam_id outputs have a 'GT' prefix on the '*.depthRG' files
             # CCDG verify_bam_id outputs do not have a 'GT' prefix on the '*.depthRG' files
-            num_expected_files = num_expected[0] if file_basenames[0].startswith('GT') else num_expected[1]
+            num_expected_files = num_expected[1] if file_basenames[0].startswith('GT') else num_expected[0]
         else:
             num_expected_files = num_expected
 
