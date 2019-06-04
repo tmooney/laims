@@ -71,11 +71,14 @@ class B38Preprocessor(object):
                             break_multiple=1000000
                             )
                     cmdline = cmd(gvcf, output_gzvcf)
+                    script_file = os.path.join(stdout_dir, new_gzvcf + '.sh')
+                    with open(script_file, 'w') as f:
+                        f.write(cmd_line + "\n")
                     stdout = os.path.join(stdout_dir, new_gzvcf + '.log')
                     lsf_options = {
                             'stdout': stdout,
                             }
-                    self.lsf_job_runner.launch(cmdline, lsf_options)
+                    self.lsf_job_runner.launch(' '.join(['/bin/bash', script_file]), lsf_options)
             # Sync QC files
             qc_outdir = os.path.join(outdir, 'qc')
             utils.force_make_dirs(qc_outdir)
