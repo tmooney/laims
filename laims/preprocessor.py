@@ -73,7 +73,7 @@ class B38Preprocessor(object):
                     cmdline = cmd(gvcf, output_gzvcf)
                     script_file = os.path.join(stdout_dir, new_gzvcf + '.sh')
                     with open(script_file, 'w') as f:
-                        f.write(cmd_line + "\n")
+                        f.write(cmdline + "\n")
                     stdout = os.path.join(stdout_dir, new_gzvcf + '.log')
                     lsf_options = {
                             'stdout': stdout,
