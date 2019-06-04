@@ -84,7 +84,7 @@ class Build38RealignmentDirectory(object):
             glob_files = glob.glob(os.path.join(self.path, glob_string))
             self.output_file_dict[glob_string] = glob_files
 
-    def _is_file_count_correct(glob_string, num_expected, input_files):
+    def _is_file_count_correct(self, glob_string, num_expected, input_files):
         if glob_string == '*verify_bam_id*':
             file_basenames = [os.path.basename(i) for i in input_files].sort()
             # TopMed verify_bam_id outputs have a 'GT' prefix on the '*.depthRG' files
