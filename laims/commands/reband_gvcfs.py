@@ -1,5 +1,6 @@
 from __future__ import division
 
+from logzero import logger
 from crimson import verifybamid
 import os
 
@@ -250,6 +251,7 @@ def reband(app, output_dir, workorders):
 
 
     logdir = os.path.join(output_dir, 'log')
+    logger.info("The output directory is: {}".format(logdir))
 
     Session = open_db(app.database)
     cmd = RebandandRewriteGvcfCmd(
@@ -260,11 +262,17 @@ def reband(app, output_dir, workorders):
             reference='/gscmnt/gc2802/halllab/ccdg_resources/genomes/human/GRCh38DH/all_sequences.fa',
             break_multiple=1000000
             )
+
+    logger.info("Processing {} work orders: {}".format(len(workorders), ' '.join([str(i) for i in workorders])))
     for wo in workorders:
+        logger.info("Processing work order: {}".format(wo))
         session = Session()
         for sample in session.query(ComputeWorkflowSample).filter(
                 ComputeWorkflowSample.source_work_order == wo
                 ):
+            logger.info("Processing sample: {}".format(sample.ingest_sample_name))
+            logger.info("Analysis CRAM Path: {}".format(sample.analysis_cram_path))
+            logger.info("Is analysis CRAM verified: {}".format(sample.analysis_cram_verifyed))
             if (sample.analysis_cram_verifyed):
                 qc_dir = QcDirectory(os.path.join(sample.analysis_gvcf_path, 'qc'))
                 if qc_dir.is_complete:
