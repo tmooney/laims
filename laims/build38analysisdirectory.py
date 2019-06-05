@@ -171,17 +171,33 @@ class QcDirectory(object):
     def picard_insert_size_chart(self):
         return os.path.join(self.path, 'insert_size.pdf')
 
+    def _find_verify_bam_id_file(self, old_style, new_style):
+        filepath = old_style if os.path.isfile(old_style) else new_style
+        return filepath
+
     def verifybamid_self_sample_file(self):
-        return os.path.join(self.path, 'verify_bam_id.selfSM')
+        old_style_path = os.path.join(self.path, 'verify_bam_id.selfSM')
+        new_style_path = os.path.join(self.path, 'GT_verify_bam_id.selfSM')
+        valid_path = self._find_verify_bam_id_file(old_style_path, new_style_path)
+        return valid_path
 
     def verifybamid_self_readgroup_file(self):
-        return os.path.join(self.path, 'verify_bam_id.selfRG')
+        old_style_path = os.path.join(self.path, 'verify_bam_id.selfRG')
+        new_style_path = os.path.join(self.path, 'GT_verify_bam_id.selfRG')
+        valid_path = self._find_verify_bam_id_file(old_style_path, new_style_path)
+        return valid_path
 
     def verifybamid_depth_sample_file(self):
-        return os.path.join(self.path, 'verify_bam_id.depthSM')
+        old_style_path = os.path.join(self.path, 'verify_bam_id.selfSM')
+        new_style_path = os.path.join(self.path, 'GT_verify_bam_id.selfSM')
+        valid_path = self._find_verify_bam_id_file(old_style_path, new_style_path)
+        return valid_path
 
     def verifybamid_depth_readgroup_file(self):
-        return os.path.join(self.path, 'verify_bam_id.depthRG')
+        old_style_path = os.path.join(self.path, 'verify_bam_id.selfRG')
+        new_style_path = os.path.join(self.path, 'GT_verify_bam_id.selfRG')
+        valid_path = self._find_verify_bam_id_file(old_style_path, new_style_path)
+        return valid_path
 
     def bamutil_file(self):
         return os.path.join(self.path, 'bamutil_stats.txt')
