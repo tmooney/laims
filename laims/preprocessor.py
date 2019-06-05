@@ -5,6 +5,7 @@ from laims.build38realignmentdirectory import Build38RealignmentDirectory
 from laims.directoryvalidation import B38DirectoryValidator
 from laims.shortcutter import Shortcutter
 import laims.utils as utils
+from laims.app import LaimsApp
 
 
 class B38Preprocessor(object):
@@ -63,12 +64,7 @@ class B38Preprocessor(object):
                 output_gzvcf = os.path.join(outdir, new_gzvcf)
                 if not shortcutter.can_shortcut(gvcf, output_gzvcf):
                     cmd = RewriteGvcfCmd(
-                            java='/gapp/x64linux/opt/java/jdk/jdk1.8.0_60/bin/java',
-                            max_mem='3500M',
-                            max_stack='3500M',
-                            gatk_jar='/gscmnt/gc2802/halllab/ccdg_resources/lib/GenomeAnalysisTK-3.5-0-g36282e4.jar',
                             reference='/gscmnt/gc2802/halllab/ccdg_resources/genomes/human/GRCh38DH/all_sequences.fa',
-                            break_multiple=1000000
                             )
                     cmdline = cmd(gvcf, output_gzvcf)
                     script_file = os.path.join(stdout_dir, new_gzvcf + '.sh')
@@ -93,14 +89,15 @@ class B38Preprocessor(object):
 
 
 class RewriteGvcfCmd(object):
-    def __init__(self, java, max_mem, max_stack, gatk_jar, reference, break_multiple):
-        self.cmd = '{java} -Xmx{max_mem} -Xms{max_stack} -jar {gatk_jar} -T CombineGVCFs -R {ref} --breakBandsAtMultiplesOf {break_multiple} -V {{input}} -o {{temp_output}} && mv {{temp_output}} {{output}} && mv {{temp_output}}.tbi {{output}}.tbi'.format(
-                java=str(java),
-                max_mem=str(max_mem),
-                max_stack=str(max_stack),
-                gatk_jar=str(gatk_jar),
+    def __init__(self, reference):
+        app = LaimsApp()
+        cmd_conf = app.rewrite_gvcfs
+        self.cmd = 'java -Xmx{max_mem} -Xms{max_stack} -jar {gatk_jar} -T CombineGVCFs -R {ref} --breakBandsAtMultiplesOf {break_multiple} -V {{input}} -o {{temp_output}} && mv {{temp_output}} {{output}} && mv {{temp_output}}.tbi {{output}}.tbi'.format(
+                max_mem=cmd_conf["max_mem"],
+                max_stack=cmd_conf["max_stack"],
+                gatk_jar=app.gatk_jar,
                 ref=str(reference),
-                break_multiple=str(break_multiple),
+                break_multiple=cmd_conf['break_multiple'],
                 )
 
     def __call__(self, input_file, output_file):
