@@ -274,8 +274,11 @@ def reband(app, output_dir, workorders):
             logger.info("Analysis CRAM Path: {}".format(sample.analysis_cram_path))
             logger.info("Is analysis CRAM verified: {}".format(sample.analysis_cram_verifyed))
             if (sample.analysis_cram_verifyed):
+                logger.info("Entering into the rebanding logic for {}".format(sample.ingest_sample_name))
                 qc_dir = QcDirectory(os.path.join(sample.analysis_gvcf_path, 'qc'))
+                logger.info("Ascertaining of the QC directory is complete ({})".format(qc_dir.path))
                 if qc_dir.is_complete:
+                    logger.info("Fetching verifybamid metrics")
                     verifybamid_metrics = verifybamid.parse(qc_dir.verifybamid_self_sample_file())
                     freemix_value = verifybamid_metrics['FREEMIX']
                     cram_path = sample.analysis_cram_path
