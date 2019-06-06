@@ -1,7 +1,8 @@
 {
     "environment": "test",
     "gatk_jar": "/gatk/gatk-package-4.0.6.0-local.jar",
-    "docker": "registry.gsc.wustl.edu/ebelter/laims:latest",
+    "docker": "registry.gsc.wustl.edu/mgi/laims:latest",
+    "email": "bobama@usa.gov",
     "database": "DB",
     "lims_db_url": "sqlite:///:memory:",
     "rewrite_gvcfs": {
