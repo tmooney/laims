@@ -81,10 +81,13 @@ def oldband(app, output_dir, workorders):
                     if not os.path.exists(output_gzvcf) or not os.path.exists(output_gzvcf + '.tbi'):
                         stdout = os.path.join(stdout_dir, new_gzvcf + '.oldbanded.log')
                         cmdline = cmd(cram_file, output_gzvcf, chrom)
+                        script_file = os.path.join(stdout_dir, new_gzvcf + '.oldbanded.sh')
+                        with open(script_file, 'w') as f:
+                           f.write(cmdline + "\n")
                         lsf_options = {
                                 'stdout': stdout,
                                 }
-                        job_runner.launch(cmdline, lsf_options)
+                        job_runner.launch(' '.join(['/bin/bash', script_file]), lsf_options)
 
                 # do ext
                 chrom_string = ' -L '.join(ext_chromosomes)

@@ -1,5 +1,6 @@
 from __future__ import division
 
+from logzero import logger
 from crimson import verifybamid
 import os
 
@@ -250,6 +251,7 @@ def reband(app, output_dir, workorders):
 
 
     logdir = os.path.join(output_dir, 'log')
+    logger.info("The output directory is: {}".format(logdir))
 
     Session = open_db(app.database)
     cmd = RebandandRewriteGvcfCmd(
@@ -260,14 +262,23 @@ def reband(app, output_dir, workorders):
             reference='/gscmnt/gc2802/halllab/ccdg_resources/genomes/human/GRCh38DH/all_sequences.fa',
             break_multiple=1000000
             )
+
+    logger.info("Processing {} work orders: {}".format(len(workorders), ' '.join([str(i) for i in workorders])))
     for wo in workorders:
+        logger.info("Processing work order: {}".format(wo))
         session = Session()
         for sample in session.query(ComputeWorkflowSample).filter(
                 ComputeWorkflowSample.source_work_order == wo
                 ):
+            logger.info("Processing sample: {}".format(sample.ingest_sample_name))
+            logger.info("Analysis CRAM Path: {}".format(sample.analysis_cram_path))
+            logger.info("Is analysis CRAM verified: {}".format(sample.analysis_cram_verifyed))
             if (sample.analysis_cram_verifyed):
+                logger.info("Entering into the rebanding logic for {}".format(sample.ingest_sample_name))
                 qc_dir = QcDirectory(os.path.join(sample.analysis_gvcf_path, 'qc'))
+                logger.info("Ascertaining of the QC directory is complete ({})".format(qc_dir.path))
                 if qc_dir.is_complete:
+                    logger.info("Fetching verifybamid metrics")
                     verifybamid_metrics = verifybamid.parse(qc_dir.verifybamid_self_sample_file())
                     freemix_value = verifybamid_metrics['FREEMIX']
                     cram_path = sample.analysis_cram_path
@@ -286,10 +297,13 @@ def reband(app, output_dir, workorders):
                         if not os.path.exists(output_gzvcf) or not os.path.exists(output_gzvcf + '.tbi'):
                             stdout = os.path.join(stdout_dir, new_gzvcf + '.rebanded.log')
                             cmdline = cmd(cram_file, freemix_value, output_gzvcf, chrom)
+                            script_file = os.path.join(stdout_dir, new_gzvcf + '.rebanded.sh')
+                            with open(script_file, 'w') as f:
+                                f.write(cmdline + "\n")
                             lsf_options = {
                                     'stdout': stdout,
                                     }
-                            job_runner.launch(cmdline, lsf_options)
+                            job_runner.launch(' '.join(['/bin/bash', script_file]), lsf_options)
 
                     # do ext
                     chrom_string = ' -L '.join(ext_chromosomes)

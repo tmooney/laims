@@ -22,13 +22,36 @@ class DirectoryValidator(object):
             output_file_dict[glob_string] = glob_files
         return output_file_dict
 
+    def _is_file_count_correct(self, glob_string, num_expected, input_files):
+        if glob_string == '*verify_bam_id*':
+            file_basenames = sorted([os.path.basename(i) for i in input_files])
+            # TopMed verify_bam_id outputs have a 'GT' prefix on the '*.depthRG' files
+            # CCDG verify_bam_id outputs do not have a 'GT' prefix on the '*.depthRG' files
+            num_expected_files = num_expected[1] if file_basenames[0].startswith('GT') else num_expected[0]
+        else:
+            num_expected_files = num_expected
+
+        num_actual_files = len(input_files)
+        rv = num_expected_files == num_actual_files
+        if rv == False:
+            msg = "File count check mismatch: file type: '{}' -- expected : {} found : {}"
+            msg = msg.format(glob_string, num_expected_files, num_actual_files)
+            logger.error(msg)
+        return rv
+
     def complete(self, directory, output_file_dict=None):
         if output_file_dict is None:
             output_file_dict = self.collect_output_file_dict(directory)
         complete = True
         reasons = ['{0} is not complete'.format(directory)]
-        for glob_string, num_expected in self.expectations.iteritems():
-            if not num_expected == len(output_file_dict[glob_string]):
+        for (glob_string, num_expected) in self.expectations.items():
+            output_files = output_file_dict[glob_string]
+            file_count_check = self._is_file_count_correct(
+                glob_string,
+                num_expected,
+                output_files
+            )
+            if file_count_check == False:
                 complete = False
                 reasons.append(
                     '\tMissing files matching {0}'.format(glob_string)

@@ -56,7 +56,10 @@ class B38Preprocessor(object):
             if not (cram_shortcutter.can_shortcut(cram, output_cram) and cram_shortcutter.can_shortcut(crai, output_crai)):
                 cram_copy_cmd = RsyncCmd()
                 cram_copy_cmdline = cram_copy_cmd(d.cram_file(), outdir)
-                self.lsf_job_runner.launch(cram_copy_cmdline, {'stdout': copy_stdout})
+                script_file = os.path.join(stdout_dir, 'cram_copy.sh')
+                with open(script_file, 'w') as f:
+                    f.write(cram_copy_cmdline + "\n")
+                self.lsf_job_runner.launch(' '.join(['/bin/bash', script_file]), {'stdout': copy_stdout})
 
             shortcutter = Shortcutter(d, outdir, '.gvcf_file_md5s.json', lambda x: x.all_gvcf_files())
             for gvcf in d.all_gvcf_files():
