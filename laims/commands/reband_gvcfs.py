@@ -212,8 +212,7 @@ ext_chromosomes = (
     )
 
 class RebandandRewriteGvcfCmd(object):
-    laimsapp = LaimsApp()
-    def __init__(self, max_mem, max_stack, reference, break_multiple):
+    def __init__(self, reference):
         hc_cmd = '{java} -Xmx{max_mem} -Xms{max_stack} -jar {gatk_jar} -T HaplotypeCaller -R {ref} -I {{input}} -o {{temp_output1}} -ERC GVCF --max_alternate_alleles 3 -variant_index_type LINEAR -variant_index_parameter 128000 -L {{chrom}} -contamination {{freemix}} --read_filter OverclippedRead'
         combine_cmd = '{java} -Xmx{max_mem} -Xms{max_stack} -jar {gatk_jar} -T CombineGVCFs -R {ref} --breakBandsAtMultiplesOf {break_multiple} -V {{temp_output1}} -o {{temp_output2}}'
         stage_tmp = 'mv {{temp_output2}} {{output}}'
@@ -226,13 +225,15 @@ class RebandandRewriteGvcfCmd(object):
             stage_index,
             remove_tmp
             ))
+        laimsapp = LaimsApp()
+        reband_gvcfs_opts = laimsapp.reband_gvcfs_opts
         self.cmd = cmdline.format(
-                java=str(self.laimsapp.java),
-                max_mem=str(max_mem),
-                max_stack=str(max_stack),
-                gatk_jar=str(self.laimsapp.gatk_jar),
+                java=str(laimsapp.java),
+                max_mem=str(reband_gvcfs_opts["max_mem"]),
+                max_stack=str(reband_gvcfs_opts["max_stack"]),
+                gatk_jar=str(laimsapp.gatk_jar),
                 ref=str(reference),
-                break_multiple=str(break_multiple)
+                break_multiple=str(reband_gvcfs_opts["break_multiple"])
                 )
 
     def __call__(self, input_file, freemix, output_file, chrom):
@@ -257,10 +258,7 @@ def reband(app, output_dir, workorders):
 
     Session = open_db(app.database)
     cmd = RebandandRewriteGvcfCmd(
-            max_mem='8G',
-            max_stack='8G',
             reference='/gscmnt/gc2802/halllab/ccdg_resources/genomes/human/GRCh38DH/all_sequences.fa',
-            break_multiple=1000000
             )
 
     logger.info("Processing {} work orders: {}".format(len(workorders), ' '.join([str(i) for i in workorders])))

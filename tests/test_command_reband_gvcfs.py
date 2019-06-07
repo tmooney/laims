@@ -15,13 +15,15 @@ class LaimsCommandRebandTest(unittest.TestCase):
             rebrand_template = Template(f.read())
         self.assertTrue(isinstance(rebrand_template, Template))
 
+        laimsapp = self.laimsapp
+        reband_gvcfs_opts = laimsapp.reband_gvcfs_opts
         opts = {
-            "java": self.laimsapp.java,
-            "gatk_jar": self.laimsapp.gatk_jar,
+            "java": laimsapp.java,
+            "gatk_jar": laimsapp.gatk_jar,
             "reference": "/gscmnt/gc2802/halllab/ccdg_resources/genomes/human/GRCh38DH/all_sequences.fa",
-            "max_mem": "'8G'",
-            "max_stack": "'8G'",
-            "break_multiple": 1000000,
+            "max_mem": reband_gvcfs_opts["max_mem"],
+            "max_stack": reband_gvcfs_opts["max_stack"],
+            "break_multiple": reband_gvcfs_opts["break_multiple"],
             "chrom": 1,
             "freemix": 1,
             "input_file": "input.g.vcf",
@@ -30,7 +32,7 @@ class LaimsCommandRebandTest(unittest.TestCase):
         opts["temp_output1"] = opts['output_file'] + '.raw_hc.tmp.vcf.gz'
         opts["temp_output2"] = opts['output_file'] + '.tmp.vcf.gz'
 
-        rebrand_cmd = RebandandRewriteGvcfCmd(reference=opts['reference'], max_mem=opts['max_mem'], max_stack=opts['max_stack'], break_multiple=opts['break_multiple'])
+        rebrand_cmd = RebandandRewriteGvcfCmd(reference=opts['reference'])
         self.assertIsNotNone(rebrand_cmd)
         self.assertEqual(rebrand_cmd(input_file="input.g.vcf", output_file="output.g.vcf", freemix="1", chrom="1"), rebrand_template.render(opts=opts))
 
