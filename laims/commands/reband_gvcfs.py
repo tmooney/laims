@@ -213,8 +213,9 @@ ext_chromosomes = (
 
 class RebandandRewriteGvcfCmd(object):
     def __init__(self, reference):
-        hc_cmd = '{java} -Xmx{max_mem} -Xms{max_stack} -jar {gatk_jar} -T HaplotypeCaller -R {ref} -I {{cram_file}} -o {{temp_output1}} -ERC GVCF --max_alternate_alleles 3 -variant_index_type LINEAR -variant_index_parameter 128000 -L {{chrom}} -contamination {{freemix}} --read_filter OverclippedRead'
-        combine_cmd = '{java} -Xmx{max_mem} -Xms{max_stack} -jar {gatk_jar} -T CombineGVCFs -R {ref} --breakBandsAtMultiplesOf {break_multiple} -V {{temp_output1}} -o {{temp_output2}}'
+        self.reference = reference
+        hc_cmd = '{java} -Xmx{max_mem} -Xms{max_stack} -jar {gatk_jar} -T HaplotypeCaller -R {{ref}} -I {{cram_file}} -o {{temp_output1}} -ERC GVCF --max_alternate_alleles 3 -variant_index_type LINEAR -variant_index_parameter 128000 -L {{chrom}} -contamination {{freemix}} --read_filter OverclippedRead'
+        combine_cmd = '{java} -Xmx{max_mem} -Xms{max_stack} -jar {gatk_jar} -T CombineGVCFs -R {{ref}} --breakBandsAtMultiplesOf {break_multiple} -V {{temp_output1}} -o {{temp_output2}}'
         stage_tmp = 'mv {{temp_output2}} {{output}}'
         stage_index = 'mv {{temp_output2}}.tbi {{output}}.tbi'
         remove_tmp = 'rm -f {{temp_output1}} {{temp_output1}}.tbi'
@@ -232,14 +233,13 @@ class RebandandRewriteGvcfCmd(object):
                 max_mem=str(reband_gvcfs_opts["max_mem"]),
                 max_stack=str(reband_gvcfs_opts["max_stack"]),
                 gatk_jar=str(laimsapp.gatk_jar),
-                ref=str(reference),
                 break_multiple=str(reband_gvcfs_opts["break_multiple"])
                 )
 
     def __call__(self, cram_file, freemix, output_file, chrom):
         temp_output1 = output_file + '.raw_hc.tmp.vcf.gz'
         temp_output2 = output_file + '.tmp.vcf.gz'
-        return self.cmd.format(cram_file=cram_file, freemix=freemix, output=output_file, temp_output1=temp_output1, temp_output2=temp_output2, chrom=chrom)
+        return self.cmd.format(cram_file=cram_file, ref=self.reference, freemix=freemix, output=output_file, temp_output1=temp_output1, temp_output2=temp_output2, chrom=chrom)
 
 def reband(app, output_dir, workorders):
     os.environ['LSF_NO_INHERIT_ENVIRONMENT'] = 'true'
