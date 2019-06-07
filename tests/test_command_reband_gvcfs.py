@@ -30,7 +30,7 @@ class LaimsCommandRebandTest(unittest.TestCase):
         opts["temp_output1"] = opts['output_file'] + '.raw_hc.tmp.vcf.gz'
         opts["temp_output2"] = opts['output_file'] + '.tmp.vcf.gz'
 
-        rebrand_cmd = RebandandRewriteGvcfCmd(java=opts['java'], gatk_jar=opts['gatk_jar'], reference=opts['reference'], max_mem=opts['max_mem'], max_stack=opts['max_stack'], break_multiple=opts['break_multiple'])
+        rebrand_cmd = RebandandRewriteGvcfCmd(reference=opts['reference'], max_mem=opts['max_mem'], max_stack=opts['max_stack'], break_multiple=opts['break_multiple'])
         self.assertIsNotNone(rebrand_cmd)
         self.assertEqual(rebrand_cmd(input_file="input.g.vcf", output_file="output.g.vcf", freemix="1", chrom="1"), rebrand_template.render(opts=opts))
 
