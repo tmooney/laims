@@ -68,13 +68,12 @@ class LsfJob(object):
             )
 
     def __init__(self, options):
-        self.bsub_options = ['bsub']
         self.created_options = options
 
     def _construct_bsub(self, override_options):
         options = self.created_options.copy()
         options.update(override_options)
-        return self.bsub_options + reduce(
+        return ['bsub'] + reduce(
                 lambda x, y: x + y,
                 [y for y in [x(options) for x in LsfJob.available_options] if y is not None]
                 )
