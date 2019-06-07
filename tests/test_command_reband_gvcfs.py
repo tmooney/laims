@@ -9,13 +9,14 @@ class LaimsCommandRebandTest(unittest.TestCase):
     laimsapp = LaimsApp(config_file=os.path.join("tests", "test_app", "laims.json"))
 
     def test1_cmd_object(self):
-        rebrand_template_fn = os.path.join('share', 'rebrand-gvcfs.sh.jinja')
-        self.assertTrue(os.path.exists(rebrand_template_fn))
-        with open(rebrand_template_fn, 'r') as f:
-            rebrand_template = Template(f.read())
-        self.assertTrue(isinstance(rebrand_template, Template))
+        reband_template_fn = os.path.join('share', 'reband-gvcfs.sh.jinja')
+        self.assertTrue(os.path.exists(reband_template_fn))
+        with open(reband_template_fn, 'r') as f:
+            reband_template = Template(f.read())
+        self.assertTrue(isinstance(reband_template, Template))
 
         laimsapp = self.laimsapp
+        laimsapp.share_dir = os.path.join(os.getcwd(), 'share')
         reband_gvcfs_opts = laimsapp.reband_gvcfs_opts
         opts = {
             "java": laimsapp.java,
@@ -32,9 +33,10 @@ class LaimsCommandRebandTest(unittest.TestCase):
         opts["temp_output1"] = opts['output_file'] + '.raw_hc.tmp.vcf.gz'
         opts["temp_output2"] = opts['output_file'] + '.tmp.vcf.gz'
 
-        rebrand_cmd = RebandandRewriteGvcfCmd(reference=opts['reference'])
-        self.assertIsNotNone(rebrand_cmd)
-        self.assertEqual(rebrand_cmd(cram_file="sample.cram", output_file="output.g.vcf", freemix="1", chrom="1"), rebrand_template.render(opts=opts))
+        self.maxDiff = None
+        reband_cmd = RebandandRewriteGvcfCmd(reference=opts['reference'])
+        self.assertIsNotNone(reband_cmd)
+        self.assertEqual(reband_cmd(cram_file="sample.cram", output_file="output.g.vcf", freemix="1", chrom="1"), reband_template.render(opts=opts))
 
 # -- LaimsCommandRebandTest
 

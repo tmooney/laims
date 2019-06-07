@@ -1,8 +1,7 @@
-from __future__ import division
-
-from logzero import logger
-from crimson import verifybamid
 import os
+from crimson import verifybamid
+from logzero import logger
+from jinja2 import Template
 
 from laims.app import LaimsApp
 from laims.build38analysisdirectory import QcDirectory
@@ -214,37 +213,30 @@ ext_chromosomes = (
 class RebandandRewriteGvcfCmd(object):
     def __init__(self, reference):
         self.reference = reference
-        hc_cmd = '{java} -Xmx{max_mem} -Xms{max_stack} -jar {gatk_jar} -T HaplotypeCaller -R {ref} -I {cram_file} -o {temp_output1} -ERC GVCF --max_alternate_alleles 3 -variant_index_type LINEAR -variant_index_parameter 128000 -L {chrom} -contamination {freemix} --read_filter OverclippedRead'
-        combine_cmd = '{java} -Xmx{max_mem} -Xms{max_stack} -jar {gatk_jar} -T CombineGVCFs -R {ref} --breakBandsAtMultiplesOf {break_multiple} -V {temp_output1} -o {temp_output2}'
-        stage_tmp = 'mv {temp_output2} {output}'
-        stage_index = 'mv {temp_output2}.tbi {output}.tbi'
-        remove_tmp = 'rm -f {temp_output1} {temp_output1}.tbi'
-        self.cmd = ' && '.join((
-            hc_cmd,
-            combine_cmd,
-            stage_tmp,
-            stage_index,
-            remove_tmp
-            ))
+        cmd_template_fn = os.path.join(LaimsApp().share_dir, 'reband-gvcfs.sh.jinja')
+        with open(cmd_template_fn, 'r') as f:
+            self.cmd = Template(f.read())
 
     def __call__(self, cram_file, freemix, output_file, chrom):
         laimsapp = LaimsApp()
         reband_gvcfs_opts = laimsapp.reband_gvcfs_opts
         temp_output1 = output_file + '.raw_hc.tmp.vcf.gz'
         temp_output2 = output_file + '.tmp.vcf.gz'
-        return self.cmd.format(
-            cram_file=cram_file,
-            ref=self.reference,
-            freemix=freemix,
-            output=output_file,
-            temp_output1=temp_output1,
-            temp_output2=temp_output2,
-            chrom=chrom,
-            java=str(laimsapp.java),
-            max_mem=str(reband_gvcfs_opts["max_mem"]),
-            max_stack=str(reband_gvcfs_opts["max_stack"]),
-            gatk_jar=str(laimsapp.gatk_jar),
-            break_multiple=str(reband_gvcfs_opts["break_multiple"]),
+        return self.cmd.render(
+            opts={
+                "cram_file": cram_file,
+                "reference": str(self.reference),
+                "freemix": freemix,
+                "output_file": output_file,
+                "temp_output1": temp_output1,
+                "temp_output2": temp_output2,
+                "chrom": chrom,
+                "java": str(laimsapp.java),
+                "max_mem": str(reband_gvcfs_opts["max_mem"]),
+                "max_stack": str(reband_gvcfs_opts["max_stack"]),
+                "gatk_jar": str(laimsapp.gatk_jar),
+                "break_multiple": str(reband_gvcfs_opts["break_multiple"]),
+            },
         )
 
 def reband(app, output_dir, workorders):
