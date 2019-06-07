@@ -26,7 +26,7 @@ class LaimsCommandRebandTest(unittest.TestCase):
             "break_multiple": reband_gvcfs_opts["break_multiple"],
             "chrom": 1,
             "freemix": 1,
-            "input_file": "input.g.vcf",
+            "cram_file": "sample.cram",
             "output_file": "output.g.vcf",
         }
         opts["temp_output1"] = opts['output_file'] + '.raw_hc.tmp.vcf.gz'
@@ -34,7 +34,7 @@ class LaimsCommandRebandTest(unittest.TestCase):
 
         rebrand_cmd = RebandandRewriteGvcfCmd(reference=opts['reference'])
         self.assertIsNotNone(rebrand_cmd)
-        self.assertEqual(rebrand_cmd(input_file="input.g.vcf", output_file="output.g.vcf", freemix="1", chrom="1"), rebrand_template.render(opts=opts))
+        self.assertEqual(rebrand_cmd(cram_file="sample.cram", output_file="output.g.vcf", freemix="1", chrom="1"), rebrand_template.render(opts=opts))
 
 # -- LaimsCommandRebandTest
 
