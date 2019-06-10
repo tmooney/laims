@@ -78,18 +78,12 @@ class LsfJob(object):
                 [y for y in [x(options) for x in LsfJob.available_options] if y is not None]
                 )
 
-    def _construct_cmd(self, cmd, cmd_options):
-        bsub_cmd = self._construct_bsub(cmd_options)
-        return bsub_cmd + cmd.split(' ')
-
     def bsub_cmd(self, cmd, cmd_options={}):
-        return ' '.join(self._construct_cmd(cmd, cmd_options))
-
-    def dry_run(self, cmd, cmd_options={}):
-        return self.bsub_cmd(cmd, cmd_options)
+        bsub_cmd = self._construct_bsub(cmd_options)
+        return bsub_cmd + cmd
 
     def launch(self, cmd, cmd_options={}):
-        final_cmd = self._construct_cmd(cmd, cmd_options)
+        final_cmd = self.bsub_cmd(cmd, cmd_options)
         logger.info("Exec CMD: {}".format(' '.join(final_cmd)))
         subprocess.check_call(final_cmd)
 

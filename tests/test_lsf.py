@@ -28,16 +28,14 @@ class LaimsLsfTest(unittest.TestCase):
         job = LsfJob(config)
         self.assertTrue(isinstance(job, LsfJob))
 
-        expected_cmd = ' '.join(['bsub', '-a', 'docker(registry.gsc.wustl.edu/mgi/laims:latest)', '-N', '-u', 'bobama@usa.gov', 'echo', 'hello', 'world'])
-        self.assertEqual(job.bsub_cmd('echo hello world'), expected_cmd)
-        self.assertEqual(job.dry_run('echo hello world'), expected_cmd)
+        expected_cmd = ['bsub', '-a', 'docker(registry.gsc.wustl.edu/mgi/laims:latest)', '-N', '-u', 'bobama@usa.gov', 'echo', 'hello', 'world']
+        self.assertEqual(job.bsub_cmd(['echo', 'hello', 'world']), expected_cmd)
 
-        expected_cmd = ' '.join(['bsub', '-M', '10000000', '-R', '"select[mem>10000] rusage[mem=10000]"', '-a', 'docker(hello-world)', '-N', '-u', 'bobama@usa.gov', 'echo', 'hello', 'world'])
-        self.assertEqual(job.bsub_cmd('echo hello world', {"docker": "hello-world", "memory_in_gb": 10}), expected_cmd)
-        self.assertEqual(job.dry_run('echo hello world', {"docker": "hello-world", "memory_in_gb": 10}), expected_cmd)
+        expected_cmd = ['bsub', '-M', '10000000', '-R', '"select[mem>10000] rusage[mem=10000]"', '-a', 'docker(hello-world)', '-N', '-u', 'bobama@usa.gov', 'echo', 'hello', 'world']
+        self.assertEqual(job.bsub_cmd(['echo', 'hello', 'world'], {"docker": "hello-world", "memory_in_gb": 10}), expected_cmd)
 
         subprocess_patch.return_value = 1
-        self.assertFalse(job.launch('echo hello world', {"docker": "hello-world"}), expected_cmd)
+        self.assertFalse(job.launch(['echo', 'hello', 'world'], {"docker": "hello-world"}), expected_cmd)
 
 # -- LaimsLsfTest
 

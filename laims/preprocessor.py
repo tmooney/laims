@@ -59,7 +59,7 @@ class B38Preprocessor(object):
                 script_file = os.path.join(stdout_dir, 'cram_copy.sh')
                 with open(script_file, 'w') as f:
                     f.write(cram_copy_cmdline + "\n")
-                self.lsf_job_runner.launch(' '.join(['/bin/bash', script_file]), {'stdout': copy_stdout})
+                self.lsf_job_runner.launch(['/bin/bash', script_file], {'stdout': copy_stdout})
 
             shortcutter = Shortcutter(d, outdir, '.gvcf_file_md5s.json', lambda x: x.all_gvcf_files())
             for gvcf in d.all_gvcf_files():
@@ -77,7 +77,7 @@ class B38Preprocessor(object):
                     lsf_options = {
                             'stdout': stdout,
                             }
-                    self.lsf_job_runner.launch(' '.join(['/bin/bash', script_file]), lsf_options)
+                    self.lsf_job_runner.launch(['/bin/bash', script_file], lsf_options)
             # Sync QC files
             qc_outdir = os.path.join(outdir, 'qc')
             utils.force_make_dirs(qc_outdir)

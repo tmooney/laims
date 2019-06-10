@@ -87,7 +87,7 @@ def oldband(app, output_dir, workorders):
                         lsf_options = {
                                 'stdout': stdout,
                                 }
-                        job_runner.launch(' '.join(['/bin/bash', script_file]), lsf_options)
+                        job_runner.launch(['/bin/bash', script_file], lsf_options)
 
                 # do ext
                 chrom_string = ' -L '.join(ext_chromosomes)
@@ -105,5 +105,5 @@ def oldband(app, output_dir, workorders):
                     lsf_options = {
                             'stdout': stdout,
                             }
-                    job_runner.launch('/bin/bash {0}'.format(script), lsf_options)
+                    job_runner.launch(['/bin/bash', script], lsf_options)
 
