@@ -6,7 +6,6 @@ import textwrap
 
 def chromosomes():
     chroms = list(range(1, 23))
-    import pdb; pdb.set_trace()
     chroms.extend(['X', 'Y'])
     chroms = [ 'chr{}'.format(c) for c in chroms ]
     return chroms
