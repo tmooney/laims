@@ -28,6 +28,10 @@ COPY prod.json ./
 WORKDIR /etc/profile.d/
 COPY /etc/profile.d/laims.sh ./
 
+# Templates
+WORKDIR /usr/local/share/laims
+COPY share/ ./
+
 # CLEANUP
 WORKDIR /tmp/
 RUN rm -rf laims/
