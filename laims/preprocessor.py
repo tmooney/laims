@@ -110,10 +110,10 @@ class RewriteGvcfCmd(object):
 
 class GenericRsyncCmd(object):
     def __init__(self):
-        self.cmd = 'rsync --verbose --archive {input} {output_dir}/'
+        self.cmd = ['rsync', '--verbose', '--archive', ]
 
     def __call__(self, input_files, output_dir):
-        return self.cmd.format(input=' '.join(input_files), output_dir=output_dir)
+        return self.cmd + input_files + [output_dir + '/']
 
 
 class RsyncCmd(object):
