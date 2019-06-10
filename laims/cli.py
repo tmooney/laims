@@ -102,3 +102,23 @@ def launch_verify_gvcf(app, gvcf_path, reference_path, interval):
 def launch_verify_bulk_gvcfs(app, tsv_path, reference_path):
     from laims.commands.verify_bulk_gvcfs import verify_bulk_gvcfs
     verify_bulk_gvcfs(app, tsv_path, reference_path)
+
+# SAMPLE
+# - list
+@click.group()
+def laims_sample_cmd():
+    """
+    Commands and Information About Samples
+    """
+    pass
+
+cli.add_command(laims_sample_cmd, name="samples")
+
+@click.command(short_help="list samples")
+@click.argument('filter', type=click.STRING)
+@click.argument('show', type=click.STRING)
+def laims_sample_list_cmd(filter):
+    """
+    List Samples in the LAIMS DB
+    """
+laims_sample_cmd.add_command(laims_sample_list_cmd, name="list")
