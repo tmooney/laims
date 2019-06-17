@@ -5,6 +5,7 @@ from laims.build38realignmentdirectory import Build38RealignmentDirectory
 from laims.directoryvalidation import B38DirectoryValidator
 from laims.shortcutter import Shortcutter
 import laims.utils as utils
+from laims.app import LaimsApp
 
 
 class B38Preprocessor(object):
@@ -58,7 +59,7 @@ class B38Preprocessor(object):
                 script_file = os.path.join(stdout_dir, 'cram_copy.sh')
                 with open(script_file, 'w') as f:
                     f.write(cram_copy_cmdline + "\n")
-                self.lsf_job_runner.launch(' '.join(['/bin/bash', script_file]), {'stdout': copy_stdout})
+                self.lsf_job_runner.launch(['/bin/bash', script_file], {'stdout': copy_stdout})
 
             shortcutter = Shortcutter(d, outdir, '.gvcf_file_md5s.json', lambda x: x.all_gvcf_files())
             for gvcf in d.all_gvcf_files():
@@ -66,12 +67,7 @@ class B38Preprocessor(object):
                 output_gzvcf = os.path.join(outdir, new_gzvcf)
                 if not shortcutter.can_shortcut(gvcf, output_gzvcf):
                     cmd = RewriteGvcfCmd(
-                            java='/gapp/x64linux/opt/java/jdk/jdk1.8.0_60/bin/java',
-                            max_mem='3500M',
-                            max_stack='3500M',
-                            gatk_jar='/gscmnt/gc2802/halllab/ccdg_resources/lib/GenomeAnalysisTK-3.5-0-g36282e4.jar',
                             reference='/gscmnt/gc2802/halllab/ccdg_resources/genomes/human/GRCh38DH/all_sequences.fa',
-                            break_multiple=1000000
                             )
                     cmdline = cmd(gvcf, output_gzvcf)
                     script_file = os.path.join(stdout_dir, new_gzvcf + '.sh')
@@ -81,7 +77,7 @@ class B38Preprocessor(object):
                     lsf_options = {
                             'stdout': stdout,
                             }
-                    self.lsf_job_runner.launch(' '.join(['/bin/bash', script_file]), lsf_options)
+                    self.lsf_job_runner.launch(['/bin/bash', script_file], lsf_options)
             # Sync QC files
             qc_outdir = os.path.join(outdir, 'qc')
             utils.force_make_dirs(qc_outdir)
@@ -96,14 +92,15 @@ class B38Preprocessor(object):
 
 
 class RewriteGvcfCmd(object):
-    def __init__(self, java, max_mem, max_stack, gatk_jar, reference, break_multiple):
-        self.cmd = '{java} -Xmx{max_mem} -Xms{max_stack} -jar {gatk_jar} -T CombineGVCFs -R {ref} --breakBandsAtMultiplesOf {break_multiple} -V {{input}} -o {{temp_output}} && mv {{temp_output}} {{output}} && mv {{temp_output}}.tbi {{output}}.tbi'.format(
-                java=str(java),
-                max_mem=str(max_mem),
-                max_stack=str(max_stack),
-                gatk_jar=str(gatk_jar),
+    def __init__(self, reference):
+        app = LaimsApp()
+        cmd_conf = app.rewrite_gvcfs
+        self.cmd = 'java -Xmx{max_mem} -Xms{max_stack} -jar {gatk_jar} -T CombineGVCFs -R {ref} --breakBandsAtMultiplesOf {break_multiple} -V {{input}} -o {{temp_output}} && mv {{temp_output}} {{output}} && mv {{temp_output}}.tbi {{output}}.tbi'.format(
+                max_mem=cmd_conf["max_mem"],
+                max_stack=cmd_conf["max_stack"],
+                gatk_jar=app.gatk_jar,
                 ref=str(reference),
-                break_multiple=str(break_multiple),
+                break_multiple=cmd_conf['break_multiple'],
                 )
 
     def __call__(self, input_file, output_file):
@@ -113,10 +110,10 @@ class RewriteGvcfCmd(object):
 
 class GenericRsyncCmd(object):
     def __init__(self):
-        self.cmd = 'rsync --verbose --archive {input} {output_dir}/'
+        self.cmd = ['rsync', '--verbose', '--archive', ]
 
     def __call__(self, input_files, output_dir):
-        return self.cmd.format(input=' '.join(input_files), output_dir=output_dir)
+        return self.cmd + input_files + [output_dir + '/']
 
 
 class RsyncCmd(object):

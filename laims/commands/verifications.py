@@ -5,7 +5,7 @@ import sqlite3
 import textwrap
 
 def chromosomes():
-    chroms = range(1, 23)
+    chroms = list(range(1, 23))
     chroms.extend(['X', 'Y'])
     chroms = [ 'chr{}'.format(c) for c in chroms ]
     return chroms

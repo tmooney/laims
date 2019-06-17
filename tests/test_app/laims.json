@@ -1,5 +1,21 @@
 {
     "environment": "test",
+    "share_dir": "/usr/share",
+    "java": "/usr/bin/java",
+    "gatk_jar": "/gatk/gatk-package-4.0.6.0-local.jar",
+    "docker": "registry.gsc.wustl.edu/mgi/laims:latest",
+    "email": "bobama@usa.gov",
     "database": "DB",
-    "lims_db_url": "sqlite:///:memory:"
+    "lims_db_url": "sqlite:///:memory:",
+    "reband_gvcfs_opts": {
+        "memory_in_gb": 10,
+	"max_mem": "8G",
+        "max_stack": "8G",
+        "break_multiple": 1000000
+    },
+    "rewrite_gvcfs": {
+	"max_mem": "3500M",
+	"max_stack": "3500M",
+	"break_multiple": 1000000
+    }
 }

@@ -11,12 +11,17 @@ class BsubOption(object):
         if self.key in option_dict:
             return [self.option_flag, option_dict[self.key]]
 
+#-- BsubOption
 
 class BsubEmailOption(BsubOption):
+    def __init__(self):
+        super(BsubEmailOption, self).__init__('email', '-u')
+
     def __call__(self, option_dict):
         if self.key in option_dict:
-            return ['-N'] + super(BsubEmailOption, self).__call__(option_dict)
+            return ['-N' ] + super(BsubEmailOption, self).__call__(option_dict)
 
+#-- BsubEmailOption
 
 class BsubMemoryOption(BsubOption):
     def __init__(self):
@@ -33,6 +38,7 @@ class BsubMemoryOption(BsubOption):
                 resource_string.format(mem=option_dict[self.key]),
             ]
 
+#-- BsubMemoryOption
 
 class BsubDockerOption(BsubOption):
     def __init__(self):
@@ -46,6 +52,7 @@ class BsubDockerOption(BsubOption):
                 docker_string.format(registry=option_dict[self.key])
                 ]
 
+#-- BsubDockerOption
 
 class LsfJob(object):
     available_options = (
@@ -56,35 +63,27 @@ class LsfJob(object):
             BsubOption('job_name', '-J'),
             BsubOption('stdout', '-oo'),
             BsubOption('stderr', '-eo'),
-            BsubEmailOption('email', '-u'),
+            BsubEmailOption(),
             BsubOption('group', '-g'),
             )
 
     def __init__(self, options):
-        self.bsub_options = ['bsub']
         self.created_options = options
 
     def _construct_bsub(self, override_options):
         options = self.created_options.copy()
         options.update(override_options)
-        return self.bsub_options + reduce(
+        return ['bsub'] + reduce(
                 lambda x, y: x + y,
                 [y for y in [x(options) for x in LsfJob.available_options] if y is not None]
                 )
 
-    def _construct_cmd(self, cmd, cmd_options):
+    def bsub_cmd(self, cmd, cmd_options={}):
         bsub_cmd = self._construct_bsub(cmd_options)
-        return bsub_cmd + cmd.split(' ')
+        return bsub_cmd + cmd
 
-    def bsub_cmd(self, cmd, cmd_options):
-        return ' '.join(self._construct_cmd(cmd, cmd_options))
-
-    def dry_run(self, cmd, cmd_options):
-        return self.bsub_cmd(cmd, cmd_options)
-
-    def launch(self, cmd, cmd_options):
-        print(self.dry_run(cmd, cmd_options))
-        final_cmd = self._construct_cmd(cmd, cmd_options)
+    def launch(self, cmd, cmd_options={}):
+        final_cmd = self.bsub_cmd(cmd, cmd_options)
         logger.info("Exec CMD: {}".format(' '.join(final_cmd)))
         subprocess.check_call(final_cmd)
 

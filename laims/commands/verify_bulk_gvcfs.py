@@ -23,8 +23,8 @@ def verify_bulk_gvcfs(app, tsv_path, reference_path):
         for row in reader:
             interval = get_interval_from_path(row[0])
             cmd = [ "laims", "verify-gvcf", "--gvcf-path", row[0], "--reference-path", reference_path, "--interval", interval ]
-            #print(job_runner.dry_run(cmd, {}))
-            job_runner.launch(cmd, {})
+            #print(job_runner.bsub_cmd(cmd))
+            job_runner.launch(cmd)
 
 
 chromosomes = [ 'chr{}'.format(c) for c in range(1,23) ]
