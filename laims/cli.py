@@ -5,6 +5,7 @@ from logzero import logger
 
 import laims
 from laims.app import LaimsApp
+import laims.sample as sample
 
 @click.group()
 @click.option('--config', envvar='LAIMS_CONFIG')
@@ -112,13 +113,15 @@ def laims_sample_cmd():
     """
     pass
 
-cli.add_command(laims_sample_cmd, name="samples")
+cli.add_command(laims_sample_cmd, name="sample")
 
-@click.command(short_help="list samples")
-@click.argument('filter', type=click.STRING)
-@click.argument('show', type=click.STRING)
-def laims_sample_list_cmd(filter):
+@click.command(short_help="sample")
+@click.argument('filter_by', type=click.STRING, nargs=1)
+@click.option('--show', type=click.STRING, help="Comma separatted attributes to show. Default: {}".format(sample.list_default_show()), default=sample.list_default_show())
+def laims_sample_list_cmd(filter_by, show):
     """
     List Samples in the LAIMS DB
     """
+    #assert bool(app.TenxApp.config) is True, "Must provide tenx yaml config file!"
+    sample.list(filter_by, show)
 laims_sample_cmd.add_command(laims_sample_list_cmd, name="list")

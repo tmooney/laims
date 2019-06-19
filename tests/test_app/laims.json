@@ -1,5 +1,5 @@
 {
     "environment": "test",
     "database": "DB",
-    "lims_db_url": "sqlite:///:memory:"
+    "lims_db_url": "sqlite:///tests/test_app/test.db"
 }
