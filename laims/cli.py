@@ -7,7 +7,8 @@ import laims
 from laims.app import LaimsApp
 import laims.sample as sample
 
-@click.group()
+CONTEXT_SETTINGS = dict(help_option_names=['-h', '--help'])
+@click.group(context_settings=CONTEXT_SETTINGS)
 @click.option('--config', envvar='LAIMS_CONFIG')
 @click.option('--database', envvar='LAIMS_DB_PATH')
 @click.option('--job-group', default=None)
