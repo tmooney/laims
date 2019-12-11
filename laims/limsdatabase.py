@@ -8,8 +8,6 @@ class ReadCountInDb(object):
         self._sql = 'sqlrun "select seq_id, filt_clusters * 2 from index_illumina where seq_id in ({0})" --parse'
 
     def get_read_counts(self, read_groups):
-        #psql -U gscguest -h lims-db.gsc.wustl.edu lims
-        # select seq_id, filt_clusters * 2 from index_illumina where seq_id in ({0})" --parse
         sql = """
             select ii.seq_id, ii.filt_clusters * 2 as total_clusters
             from   index_illumina ii
