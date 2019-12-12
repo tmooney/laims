@@ -98,7 +98,6 @@ def launch_verify_gvcf(app, gvcf_path, reference_path, interval):
 @cli.command(name='verify-bulk-gvcfs', help="verify a batch of GVCFs with GATK ValidateVariants using LSF")
 @click.option('--tsv-path', help='Path to the TSV with GVCFs', type=click.Path(exists=True), required=True)
 @click.option('--reference-path', help='Path to the reference sequence', default="/gscmnt/gc2802/halllab/ccdg_resources/genomes/human/GRCh38DH/all_sequences.fa", type=click.Path(exists=True), required=True)
-@click.pass_obj
-def launch_verify_bulk_gvcfs(app, tsv_path, reference_path):
+def launch_verify_bulk_gvcfs(tsv_path, reference_path):
     from laims.commands.verify_bulk_gvcfs import verify_bulk_gvcfs
-    verify_bulk_gvcfs(app, tsv_path, reference_path)
+    verify_bulk_gvcfs(tsv_path, reference_path)
