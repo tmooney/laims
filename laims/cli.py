@@ -97,3 +97,12 @@ def launch_verify_gvcf(app, gvcf_path, reference_path, interval):
 def launch_verify_bulk_gvcfs(tsv_path, reference_path):
     from laims.commands.verify_bulk_gvcfs import verify_bulk_gvcfs
     verify_bulk_gvcfs(tsv_path, reference_path)
+
+@cli.command(name='downsample-bams', help="downsample a bunch of BAMs")
+@click.option('--bam-list', help='file with one BAM per line to be downsampled', type=click.Path(exists=True), required=True)
+@click.option('--output-dir', help='where to put the downsampled output', type=click.Path(exists=True), required=True)
+@click.option('--probability', help='chance (between 0.0 and 1.0) of keeping any given read', type=float, required=True)
+@click.pass_obj
+def launch_downsample_bams(app, bam_list, output_dir, probability):
+    from laims.commands.downsample_bams import downsample_bams
+    downsample_bams(app, bam_list, output_dir, probability)
