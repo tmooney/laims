@@ -4,9 +4,11 @@ from .context import laims
 from laims.app import LaimsApp
 
 class LaimsAppTest(unittest.TestCase):
+    def setUp(self):
+        self.config_fn = os.path.join(os.path.dirname(__file__), "data", "laims.json")
 
     def test1_init_fails(self):
-        with self.assertRaisesRegexp(Exception, "Given config file /laims.json does not exist!") as cm:
+        with self.assertRaisesRegex(Exception, "Given config file /laims.json does not exist!"):
             LaimsApp(config_file="/laims.json")
 
     def test2_init(self):
@@ -16,10 +18,10 @@ class LaimsAppTest(unittest.TestCase):
 
         # init w/ config
         LaimsApp.context = None # reset
-        laimsapp = LaimsApp(config_file=os.path.join("tests", "test_app", "laims.json"), config={"database": "NOTDB"})
+        laimsapp = LaimsApp(config_file=self.config_fn, config={"database": "NOTDB"})
         self.assertIsNotNone(laimsapp)
         self.assertIsNotNone(laimsapp.context)
-        self.assertEqual(laimsapp.config_file, os.path.join("tests", "test_app", "laims.json"))
+        self.assertEqual(laimsapp.config_file, self.config_fn)
         self.assertEqual(laimsapp.environment, 'test')
         self.assertEqual(laimsapp.database, 'NOTDB')
         self.assertEqual(laimsapp.lims_db_url, 'sqlite:///:memory:')
@@ -38,6 +40,9 @@ class LaimsAppTest(unittest.TestCase):
         self.assertIsNone(laimsapp.lims_db_url)
         with self.assertRaisesRegexp(Exception, "No lims_db_url"):
             laimsapp.lims_db_connection()
+
+    def test4_job_options(self):
+        self.assertTrue(True)
 
 # -- LaimsAppTest
 

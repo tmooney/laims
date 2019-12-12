@@ -6,10 +6,15 @@ from laims.app import LaimsApp
 from laims.commands.reband_gvcfs import RebandandRewriteGvcfCmd
 
 class LaimsCommandRebandTest(unittest.TestCase):
-    laimsapp = LaimsApp(config_file=os.path.join("tests", "test_app", "laims.json"))
+    def setUp(self):
+        self.dir_n = os.path.dirname(__file__)
+        self.config_fn = os.path.join(self.dir_n, "data", "laims.json")
+        self.laimsapp = LaimsApp(config_file=self.config_fn)
+
+        self.laimsapp.share_dir = os.path.join(os.path.dirname(self.dir_n), "share")
 
     def test1_cmd_object(self):
-        reband_template_fn = os.path.join('share', 'reband-gvcfs.sh.jinja')
+        reband_template_fn = os.path.join(self.laimsapp.share_dir, 'reband-gvcfs.sh.jinja')
         self.assertTrue(os.path.exists(reband_template_fn))
         with open(reband_template_fn, 'r') as f:
             reband_template = Template(f.read())

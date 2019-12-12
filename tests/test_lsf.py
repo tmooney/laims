@@ -6,7 +6,7 @@ from laims.app import LaimsApp
 from laims.lsf import BsubEmailOption, BsubMemoryOption, BsubDockerOption, LsfJob
 
 class LaimsLsfTest(unittest.TestCase):
-    laimsapp = LaimsApp(config_file=os.path.join("tests", "test_app", "laims.json"))
+    laimsapp = LaimsApp(config_file=os.path.join(os.path.dirname(__file__), "data", "laims.json"))
 
     def test1_option_classes(self):
         config = self.laimsapp.context.config
