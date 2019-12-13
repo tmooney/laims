@@ -38,11 +38,19 @@ class LaimsAppTest(unittest.TestCase):
         self.assertIsNotNone(lims_db_url);
         LaimsApp.lims_db_url = None
         self.assertIsNone(laimsapp.lims_db_url)
-        with self.assertRaisesRegexp(Exception, "No lims_db_url"):
+        with self.assertRaisesRegex(Exception, "No lims_db_url"):
             laimsapp.lims_db_connection()
 
     def test4_job_options(self):
-        self.assertTrue(True)
+        laimsapp = LaimsApp(config_file=self.config_fn)
+        laimsapp.context.config["queue"] = "ccdg"
+        self.assertTrue(laimsapp)
+        opts = laimsapp.lsf_job_options()
+        expected_opts = {
+            "queue": "ccdg",
+            "docker": "registry.gsc.wustl.edu/mgi/laims:latest",
+        }
+        self.assertDictEqual(opts, expected_opts, "LSF job options fetched from config")
 
 # -- LaimsAppTest
 

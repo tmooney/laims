@@ -28,6 +28,9 @@ class LaimsLsfTest(unittest.TestCase):
         job = LsfJob(config)
         self.assertTrue(isinstance(job, LsfJob))
 
+        available_opts = LsfJob.available_options
+        self.assertEqual(len(available_opts), 9, "available options count is 9")
+
         expected_cmd = ['bsub', '-a', 'docker(registry.gsc.wustl.edu/mgi/laims:latest)', '-N', '-u', 'bobama@usa.gov', 'echo', 'hello', 'world']
         self.assertEqual(job.bsub_cmd(['echo', 'hello', 'world']), expected_cmd)
 

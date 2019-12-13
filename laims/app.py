@@ -1,6 +1,8 @@
 import click, dataset, json, os
 from logzero import logger
 
+from laims.lsf import LsfJob
+
 class LaimsApp(object):
     context = None
     class __LaimsAppSingleton(object):
@@ -60,5 +62,17 @@ class LaimsApp(object):
         else:
             self.lims_db = dataset.connect(lims_db_url, schema='gsc')
         return self.lims_db
+
+    #-- lims_db
+
+    def lsf_job_options(self):
+        opts = {}
+        for key in ("docker", "queue", "job_group"):
+            val = getattr(self, key)
+            if val is not None:
+                opts[key] = val
+        return opts
+
+    #-- lsf_job_options
 
 #-- LaimsApp

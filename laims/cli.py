@@ -9,23 +9,19 @@ from laims.app import LaimsApp
 @click.group()
 @click.option('--config', envvar='LAIMS_CONFIG')
 @click.option('--database', envvar='LAIMS_DB_PATH')
-@click.option('--job-group', default=None)
-@click.option('--queue', default='ccdg', type=click.Choice(['research-hpc', 'ccdg']))
+@click.option('--job-group', default=None, help="LSF job group to use whe running jobs.")
+@click.option('--queue', default='ccdg', type=click.Choice(['research-hpc', 'ccdg']), help="LSF queue to use when running jobs.")
+@click.option('--job-stdout', help="LSF job STDOUT directory. Used when running multiple jobs, send output to a logically named file in this directory.")
 @click.version_option(version=laims.__version__, prog_name='laims', message='%(prog)s %(version)s')
 @click.pass_context
-def cli(ctx, config, database, job_group, queue):
+def cli(ctx, config, database, job_group, job_stdout):
     conf = {
-            "database": database,
-            "job_group": job_group,
-            "queue": queue,
-            }
+        "database": database,
+        "job_group": job_group,
+        "queue": queue,
+        "stdout": job_stdout,
+    }
     ctx.obj = LaimsApp(config_file=config, config=conf)
-
-@cli.command(help='TEST')
-@click.pass_obj
-def test(app):
-    print("TESTING\n")
-    app.log_config()
 
 @cli.command(help='ingest LIMS build38 realignment compute_workflow_execution csv')
 @click.argument('workorder_csv')
