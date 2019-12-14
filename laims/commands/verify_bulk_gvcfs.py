@@ -5,23 +5,18 @@ from laims.app import LaimsApp
 from laims.lsf import LsfJob
 
 def verify_bulk_gvcfs(tsv_path, reference_path):
-    app = LaimsApp.context.config
     os.environ['LSF_DOCKER_PRESERVE_ENVIRONMENT'] = 'false'
-    job_opts = {
-        'memory_in_gb': 10,
-        'queue': app["queue"],
-        'docker': 'registry.gsc.wustl.edu/mgi/laims:latest',
-        "stdout": "/dev/null",
-    }
-    if "job_group" in app and app["job_group"] is not None: job_opts['group'] = app["job_group"]
-    job_runner=LsfJob(job_opts)
+
+    job_opts = LaimsApp().lsf_job_options()
+    job_opts["memory_in_gb"] = 10
+    job_runner = LsfJob(job_opts)
 
     with open(tsv_path) as f:
         reader = csv.reader(f, delimiter='\t')
         for row in reader:
             interval = get_interval_from_path(row[0])
             cmd = [ "laims", "verify-gvcf", "--gvcf-path", row[0], "--reference-path", reference_path, "--interval", interval ]
-            job_runner.launch(cmd)
+            job_runner.launch(cmd, cmd_options={"stdbn": ".".join([os.path.basename(row[0]), "out"])})
 
 #-- verify_bulk_gvcfs
 
