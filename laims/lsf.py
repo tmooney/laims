@@ -1,4 +1,4 @@
-import subprocess
+import os, subprocess
 from functools import reduce
 from logzero import logger
 
@@ -72,7 +72,11 @@ class LsfJob(object):
 
     def _construct_bsub(self, override_options):
         options = self.created_options.copy()
+        stdout_bn = override_options.pop("stdout_bn", None)
         options.update(override_options)
+        if stdout_bn:
+            if "stdout" in options:
+                options["stdout"] = os.path.join(options["stdout"], stdout_bn)
         return ['bsub'] + reduce(
                 lambda x, y: x + y,
                 [y for y in [x(options) for x in LsfJob.available_options] if y is not None]

@@ -34,8 +34,13 @@ class LaimsLsfTest(unittest.TestCase):
         expected_cmd = ['bsub', '-a', 'docker(registry.gsc.wustl.edu/mgi/laims:latest)', '-N', '-u', 'bobama@usa.gov', 'echo', 'hello', 'world']
         self.assertEqual(job.bsub_cmd(['echo', 'hello', 'world']), expected_cmd)
 
-        expected_cmd = ['bsub', '-M', '10000000', '-R', '"select[mem>10000] rusage[mem=10000]"', '-a', 'docker(hello-world)', '-N', '-u', 'bobama@usa.gov', 'echo', 'hello', 'world']
+        job.created_options["stdout"] = "/var/log/out"
+        expected_cmd = ['bsub', '-M', '10000000', '-R', '"select[mem>10000] rusage[mem=10000]"', '-a', 'docker(hello-world)', "-oo", "/var/log/out", '-N', '-u', 'bobama@usa.gov', 'echo', 'hello', 'world']
         self.assertEqual(job.bsub_cmd(['echo', 'hello', 'world'], {"docker": "hello-world", "memory_in_gb": 10}), expected_cmd)
+
+        job.created_options["stdout"] = "/var/log"
+        expected_cmd = ['bsub', '-M', '10000000', '-R', '"select[mem>10000] rusage[mem=10000]"', '-a', 'docker(hello-world)', "-oo", "/var/log/log1.out", '-N', '-u', 'bobama@usa.gov', 'echo', 'hello', 'world']
+        self.assertEqual(job.bsub_cmd(['echo', 'hello', 'world'], {"docker": "hello-world", "memory_in_gb": 10, "stdout_bn": "log1.out"}), expected_cmd)
 
         subprocess_patch.return_value = 1
         self.assertFalse(job.launch(['echo', 'hello', 'world'], {"docker": "hello-world"}), expected_cmd)
