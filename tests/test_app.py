@@ -43,12 +43,14 @@ class LaimsAppTest(unittest.TestCase):
 
     def test4_job_options(self):
         laimsapp = LaimsApp(config_file=self.config_fn)
-        laimsapp.context.config["queue"] = "ccdg"
+        laimsapp.queue = "ccdg"
+        laimsapp.stdout = "/var/log/out"
         self.assertTrue(laimsapp)
         opts = laimsapp.lsf_job_options()
         expected_opts = {
             "queue": "ccdg",
             "docker": "registry.gsc.wustl.edu/mgi/laims:latest",
+            "stdout": "/var/log/out",
         }
         self.assertDictEqual(opts, expected_opts, "LSF job options fetched from config")
 
