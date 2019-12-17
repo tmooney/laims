@@ -37,11 +37,11 @@ def call_svs(app, workorders):
                 if not sv_directory.cnvnator_complete():
                     # launch cnvnator
                     complete = False
-                    print subprocess.check_output(['/bin/bash', '/gscuser/dlarson/src/internal-sv-pipeline/cnvnator_histogram.sh', filename])
+                    print(subprocess.check_output(['/bin/bash', '/gscuser/dlarson/src/internal-sv-pipeline/cnvnator_histogram.sh', filename]))
                 if not sv_directory.extract_complete():
                     # launch
                     complete = False
-                    print subprocess.check_output(['/bin/bash', '/gscuser/dlarson/src/internal-sv-pipeline/extract_sv_reads.sh', filename])
+                    print(subprocess.check_output(['/bin/bash', '/gscuser/dlarson/src/internal-sv-pipeline/extract_sv_reads.sh', filename]))
                 elif not sv_directory.lumpy_complete():
                     # launch
                     complete = False

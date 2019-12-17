@@ -7,9 +7,13 @@ class LaimsAppTest(unittest.TestCase):
     def setUp(self):
         self.config_fn = os.path.join(os.path.dirname(__file__), "data", "laims.json")
 
+    def tearDown(self):
+        LaimsApp.context = None
+
     def test1_init_fails(self):
+        # FIXME This tests does not raise an exception in the test suite, dunno why
         with self.assertRaisesRegex(Exception, "Given config file /laims.json does not exist!"):
-            LaimsApp(config_file="/laims.json")
+            laimsapp = LaimsApp(config_file="/laims.json")
 
     def test2_init(self):
         # init w/o config
@@ -33,7 +37,8 @@ class LaimsAppTest(unittest.TestCase):
         self.assertEqual(LaimsApp().foo, "bar")
 
     def test3_lims_db(self):
-        laimsapp = LaimsApp()
+        laimsapp = LaimsApp(config_file=self.config_fn, config={"database": "NOTDB"})
+        self.assertIsNotNone(laimsapp)
         lims_db_url = laimsapp.lims_db_url
         self.assertIsNotNone(lims_db_url);
         LaimsApp.lims_db_url = None
