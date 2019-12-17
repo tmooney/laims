@@ -7,7 +7,7 @@ setup(
     cmdclass=versioneer.get_cmdclass(),
     packages=find_packages(exclude=['tests']),
     install_requires=[
-        'click==6.7',
+        'click>=7.0',
         'SQLAlchemy==1.1.11',
         'logzero==1.3.1',
         'dataset==1.1.2',
