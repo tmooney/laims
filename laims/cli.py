@@ -14,7 +14,7 @@ from laims.app import LaimsApp
 @click.option('--job-stdout', help="LSF job STDOUT directory. Used when running multiple jobs, send output to a logically named file in this directory.")
 @click.version_option(version=laims.__version__, prog_name='laims', message='%(prog)s %(version)s')
 @click.pass_context
-def cli(ctx, config, database, job_group, job_stdout):
+def cli(ctx, config, database, job_group, queue, job_stdout):
     conf = {
         "database": database,
         "job_group": job_group,
