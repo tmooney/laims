@@ -25,6 +25,10 @@ WORKDIR /tmp/laims
 COPY . ./
 RUN pip install .
 
+# GATK 3.5
+WORKDIR /opt/
+COPY gatk/GenomeAnalysisTK-3.5-0-g36282e4.jar ./
+
 # BASH PROFILE
 WORKDIR /etc/profile.d/
 COPY /etc/profile.d/laims.sh ./

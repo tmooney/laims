@@ -1,0 +1,4 @@
+[submodule "git-sym"]
+	path = git-sym
+	url = https://github.com/cdunn2001/git-sym.git
+	branch = master
