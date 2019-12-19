@@ -16,6 +16,7 @@ RUN apt-get update -qq && \
     apt-get -y install --no-install-recommends \
         apt-transport-https \
         libnss-sss \
+        rsync \
         vim
 
 # Install LAIMS
