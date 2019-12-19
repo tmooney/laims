@@ -1,12 +1,15 @@
 import os, subprocess, unittest
 from mock import patch
 
-from .context import laims
 from laims.app import LaimsApp
 from laims.lsf import BsubEmailOption, BsubMemoryOption, BsubDockerOption, LsfJob
 
 class LaimsLsfTest(unittest.TestCase):
-    laimsapp = LaimsApp(config_file=os.path.join(os.path.dirname(__file__), "data", "laims.json"))
+    def setUp(self):
+        self.laimsapp = LaimsApp(config_file=os.path.join(os.path.dirname(__file__), "data", "laims.json"))
+
+    def tearDown(self):
+        LaimsApp.context = None
 
     def test1_option_classes(self):
         config = self.laimsapp.context.config
@@ -24,7 +27,11 @@ class LaimsLsfTest(unittest.TestCase):
 
     @patch('subprocess.check_call')
     def test2_lsf_job(self, subprocess_patch):
-        config = self.laimsapp.context.config
+        laimsapp = LaimsApp()
+        config = laimsapp.lsf_job_options()
+        config.pop("queue", None)
+        config.pop("stdout", None)
+        print(config)
         job = LsfJob(config)
         self.assertTrue(isinstance(job, LsfJob))
 

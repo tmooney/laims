@@ -7,7 +7,7 @@ from laims.preprocessor import GenericRsyncCmd, RewriteGvcfCmd
 class LaimsPreprocessorTest(unittest.TestCase):
 
     def test1_rewrite_gvcf_cmd(self):
-        laimsapp = LaimsApp(config_file=os.path.join("tests", "test_app", "laims.json"))
+        laimsapp = LaimsApp(config_file=os.path.join(os.path.dirname(__file__), "data", "laims.json"))
         cmd = RewriteGvcfCmd(
             reference='/gscmnt/gc2802/halllab/ccdg_resources/genomes/human/GRCh38DH/all_sequences.fa',
         )

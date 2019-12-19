@@ -67,7 +67,7 @@ class LaimsApp(object):
 
     def lsf_job_options(self):
         opts = {}
-        for key in ("docker", "queue", "job_group", "stdout"):
+        for key in ("docker", "email", "queue", "job_group", "stdout"):
             val = getattr(self, key)
             if val is not None:
                 opts[key] = val

@@ -53,6 +53,7 @@ class LaimsAppTest(unittest.TestCase):
         self.assertTrue(laimsapp)
         opts = laimsapp.lsf_job_options()
         expected_opts = {
+            "email": "bobama@usa.gov",
             "queue": "ccdg",
             "docker": "registry.gsc.wustl.edu/mgi/laims:latest",
             "stdout": "/var/log/out",
