@@ -97,3 +97,7 @@ def launch_verify_gvcf(app, gvcf_path, reference_path, interval):
 def launch_verify_bulk_gvcfs(tsv_path, reference_path):
     from laims.commands.verify_bulk_gvcfs import verify_bulk_gvcfs
     verify_bulk_gvcfs(tsv_path, reference_path)
+
+# SAMPLE
+from laims.sample_cli import laims_sample_cli
+cli.add_command(laims_sample_cli, name="sample")
