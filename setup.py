@@ -21,7 +21,8 @@ setup(
         'dataset==1.1.2',
         'psycopg2-binary==2.8.2',
         'Jinja2==2.10.1',
-        'Crimson @ https://github.com/hall-lab/crimson/tarball/8d0791c129e0b7c138c5d26c82952a069c063c27'
+        'Crimson @ https://github.com/hall-lab/crimson/tarball/8d0791c129e0b7c138c5d26c82952a069c063c27',
+        'PyYAML==3.12'
     ],
     entry_points={
         'console_scripts': [ 'laims=laims.cli:cli', ]

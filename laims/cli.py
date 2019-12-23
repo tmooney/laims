@@ -101,3 +101,11 @@ def launch_verify_bulk_gvcfs(tsv_path, reference_path):
 # SAMPLE
 from laims.sample_cli import laims_sample_cli
 cli.add_command(laims_sample_cli, name="sample")
+
+@cli.command(name="downsample-and-re-call", help="downsample BAM/CRAMs and re-run the GATK HaplotypeCaller")
+@click.option('--inputs', help="three-column TSV: BAM/CRAM, downsample ratio, and contamination fraction", type=click.Path(exists=True), required=True)
+@click.option('--output-dir', help='where to put the resulting gVCFs and QC metrics', type=click.Path(exists=True), required=True)
+@click.pass_obj
+def launch_downsample_and_recall(app, inputs, output_dir):
+    from laims.commands.downsample_and_recall import downsample_and_recall
+    downsample_and_recall(app, inputs, output_dir)

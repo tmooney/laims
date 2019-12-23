@@ -18,7 +18,8 @@ RUN apt-get update -qq && \
         git \
         libnss-sss \
         rsync \
-        vim
+        vim \
+        wget
 
 # Install LAIMS
 RUN pip install --upgrade pip
@@ -29,6 +30,9 @@ RUN pip install .
 # GATK 3.5
 WORKDIR /opt/
 COPY gatk/GenomeAnalysisTK-3.5-0-g36282e4.jar ./
+
+# Cromwell 47
+RUN wget https://github.com/broadinstitute/cromwell/releases/download/47/cromwell-47.jar && mv cromwell-47.jar /opt/cromwell.jar
 
 # BASH PROFILE
 WORKDIR /etc/profile.d/
