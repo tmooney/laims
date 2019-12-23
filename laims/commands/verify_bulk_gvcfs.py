@@ -24,7 +24,7 @@ chromosomes = [ 'chr{}'.format(c) for c in range(1,23) ]
 chromosomes.extend(['chrX', 'chrY'])
 def get_interval_from_path(path):
     for t in os.path.basename(path).split('.'):
-        if t == 'extChr': return "/gscmnt/gc2802/halllab/ccdg_resources/genomes/human/GRCh38DH/all_sequences.filtered-chromosome.list.ext"
+        if t == 'extChr': return "/gscmnt/gc2802/halllab/ccdg_resources/genomes/human/GRCh38DH/all_sequences.filtered-chromosome.ext.list"
         for c in chromosomes:
             if t == c: return c
     raise Exception('Failed to get interval from file name: {}'.format(path))
