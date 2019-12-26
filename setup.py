@@ -16,6 +16,7 @@ setup(
     install_requires=[
         'click>=7.0',
         "SQLAlchemy>=1.3.10",
+        "tabulate",
         'logzero==1.3.1',
         'dataset==1.1.2',
         'psycopg2-binary==2.8.2',
