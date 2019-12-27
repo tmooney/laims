@@ -1,6 +1,7 @@
 import click, dataset, json, os
 from logzero import logger
 
+import laims.database
 from laims.lsf import LsfJob
 
 class LaimsApp(object):
@@ -50,6 +51,13 @@ class LaimsApp(object):
     def log_config(self):
         logger.info('Using config at {0}'.format(self.config_file))
         logger.info('Using database at {0}'.format(self.database))
+
+    #-- config
+
+    def db_connection(self):
+        return laims.database.open_db(self.database)
+
+    #-- open_db
 
     def lims_db_connection(self):
         if self.lims_db:
