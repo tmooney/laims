@@ -1,10 +1,9 @@
-from sqlalchemy import (Column, Text, Integer,
-                        Boolean, DateTime, UniqueConstraint)
+from sqlalchemy import Column, Text, Integer, Boolean, DateTime, ForeignKey, UniqueConstraint
+from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 import datetime
 
 Base = declarative_base()
-
 
 class ComputeWorkflowSample(Base):
 
@@ -31,3 +30,28 @@ class ComputeWorkflowSample(Base):
     analysis_sv_path = Column(Text)
     analysis_sv_verified = Column(Boolean)
     ingest_date = Column(DateTime, default=datetime.datetime.utcnow)
+
+    metrics = relationship("SampleMetric", back_populates="sample")
+
+#-- ComputeWorkflowSample
+
+class SampleMetric(Base):
+
+    __tablename__ = 'sample_metrics'
+    __table_args__ = (
+        UniqueConstraint(
+            'sample_id',
+            'name',
+            name='uniq_metric',
+        ),
+    )
+
+    id = Column(Integer, primary_key=True)
+    sample_id = Column(Integer, ForeignKey("csp_sample.id"))
+    name = Column(Text)
+    value = Column(Text)
+
+    sample = relationship("ComputeWorkflowSample", back_populates="metrics")
+
+#-- SampleMetric
+
