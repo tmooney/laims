@@ -4,6 +4,7 @@ from laims.app import LaimsApp
 from laims.models import ComputeWorkflowSample
 
 # SAMPLE
+# cohorts
 # list
 # update-files
 
@@ -14,7 +15,14 @@ def laims_sample_cli():
     """
     pass
 
+# [cohort]
+from laims.cohorts_cli import cohorts_cli
+laims_sample_cli.add_command(cohorts_cli, name="cohorts")
+
 # [list]
+# FIXME
+# filter need to be cohort or workorder
+# need a show
 @click.command()
 @click.option("--filter-by", "-f", required=False, help="Filter samples by workorder.")
 def sample_list_cmd(filter_by):
