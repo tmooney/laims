@@ -31,9 +31,21 @@ class ComputeWorkflowSample(Base):
     analysis_sv_verified = Column(Boolean)
     ingest_date = Column(DateTime, default=datetime.datetime.utcnow)
 
+    cohorts = relationship("SampleCohort", back_populates="sample")
     metrics = relationship("SampleMetric", back_populates="sample")
 
 #-- ComputeWorkflowSample
+
+class SampleCohort(Base):
+
+    __tablename__ = 'sample_cohorts'
+
+    sample_id = Column(Integer, ForeignKey("csp_sample.id"), primary_key=True)
+    name = Column(Text, primary_key=True)
+
+    sample = relationship("ComputeWorkflowSample", back_populates="cohorts")
+
+#-- SampleMetric
 
 class SampleMetric(Base):
 

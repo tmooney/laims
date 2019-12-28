@@ -8,6 +8,16 @@ INSERT INTO "csp_sample" VALUES(7,2854361,1540831,'H_XY-BGM1070006','/gscmnt/gc1
 INSERT INTO "csp_sample" VALUES(8,2854361,1540832,'H_XY-BGM1073006','/gscmnt/gc13035/production/2853872/compute_159047595',1,NULL,'/gscmnt/gc2758/analysis/ccdg/data/H_XY-BGM1073006',1,'/gscmnt/gc2758/analysis/ccdg/data/H_XY-BGM1073006',1,'/gscmnt/gc2758/analysis/ccdg/data/H_XY-BGM1073006/sv',1,'2017-07-19 14:30:59.215934');
 INSERT INTO "csp_sample" VALUES(9,2854361,1540835,'H_XY-BGM1075006','/gscmnt/gc13035/production/2853872/compute_159047614',1,NULL,'/gscmnt/gc2758/analysis/ccdg/data/H_XY-BGM1075006',1,'/gscmnt/gc2758/analysis/ccdg/data/H_XY-BGM1075006',1,'/gscmnt/gc2758/analysis/ccdg/data/H_XY-BGM1075006/sv',1,'2017-07-19 14:31:46.718192');
 INSERT INTO "csp_sample" VALUES(10,2854361,1540837,'H_XY-BGM1086406','/gscmnt/gc13035/production/2853872/compute_159047633',1,NULL,'/gscmnt/gc2758/analysis/ccdg/data/H_XY-BGM1086406',1,'/gscmnt/gc2758/analysis/ccdg/data/H_XY-BGM1086406',1,'/gscmnt/gc2758/analysis/ccdg/data/H_XY-BGM1086406/sv',1,'2017-07-19 14:32:44.260435');
+INSERT INTO "sample_cohorts" VALUES(1, "afib");
+INSERT INTO "sample_cohorts" VALUES(2, "afib");
+INSERT INTO "sample_cohorts" VALUES(3, "afib");
+INSERT INTO "sample_cohorts" VALUES(4, "afib");
+INSERT INTO "sample_cohorts" VALUES(5, "afib");
+INSERT INTO "sample_cohorts" VALUES(6, "afib");
+INSERT INTO "sample_cohorts" VALUES(7, "afib");
+INSERT INTO "sample_cohorts" VALUES(8, "afib");
+INSERT INTO "sample_cohorts" VALUES(9, "afib");
+INSERT INTO "sample_cohorts" VALUES(10, "afib");
 INSERT INTO "sample_metrics" VALUES(1, 1, "mean_coverage", "27.351283");
 INSERT INTO "sample_metrics" VALUES(2, 2, "mean_coverage", "26.538353");
 INSERT INTO "sample_metrics" VALUES(3, 3, "mean_coverage", "24.095816");

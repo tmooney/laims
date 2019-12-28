@@ -1,7 +1,7 @@
 import os, shutil, tempfile, unittest
 
 from laims.app import LaimsApp
-from laims.models import ComputeWorkflowSample, SampleMetric
+from laims.models import ComputeWorkflowSample, SampleCohort, SampleMetric
 
 class LaimsModelsTest(unittest.TestCase):
     def setUp(self):
@@ -23,7 +23,16 @@ class LaimsModelsTest(unittest.TestCase):
         sample = session.query(ComputeWorkflowSample).get(8)
         self.assertIsNotNone(sample)
 
-    def test2_sample_metric(self):
+    def test2_sample_cohort(self):
+        sm = LaimsApp().db_connection()
+        session = sm()
+        cohorts = session.query(SampleCohort).filter_by(sample_id=8).all()
+        self.assertEqual(len(cohorts), 1)
+        sample = cohorts[0].sample
+        self.assertEqual(sample.ingest_sample_name, "H_XY-BGM1073006")
+        self.assertEqual(sample.ingest_sample_name, cohorts[0].sample.ingest_sample_name)
+
+    def test3_sample_metric(self):
         sm = LaimsApp().db_connection()
         session = sm()
         metrics = session.query(SampleMetric).filter_by(sample_id=8).all()
