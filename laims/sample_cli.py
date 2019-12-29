@@ -16,8 +16,8 @@ def laims_sample_cli():
     pass
 
 # [cohort]
-from laims.cohorts_cli import cohorts_cli
-laims_sample_cli.add_command(cohorts_cli, name="cohorts")
+from laims.cohorts_cli import laims_cohorts_cli
+laims_sample_cli.add_command(laims_cohorts_cli, name="cohorts")
 
 # [list]
 # FIXME
