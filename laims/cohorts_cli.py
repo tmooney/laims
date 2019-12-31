@@ -53,6 +53,9 @@ laims_cohorts_cli.add_command(cohorts_link_cmd, name="link")
 # [list]
 @click.command()
 def cohorts_list_cmd():
+    """
+    List cohorts and sample counts
+    """
     sm = LaimsApp().db_connection()
     session = sm()
     sql = "select name, count(*) as sample_count from sample_cohorts group by name"

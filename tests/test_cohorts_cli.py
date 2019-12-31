@@ -49,18 +49,18 @@ afib                10"""
         result = runner.invoke(cohorts_link_cmd, ["--help"])
         self.assertEqual(result.exit_code, 0)
 
-        samples = [ "H_XS-356091-0186761975", "H_XS-362472-0186761202", "H_WHEREAMI"]
-        new_crams = list(map(lambda s: os.path.join("/mnt/data/crams", s + ".cram"), samples))
+        result = runner.invoke(cohorts_link_cmd, ["new", "H_MISSING"])
+        self.assertEqual(result.exit_code, 1)
 
+        samples = [ "H_XS-356091-0186761975", "H_XS-362472-0186761202"]
         with tempfile.NamedTemporaryFile(mode="w") as temp_f:
-            temp_f.write("\n".join(new_crams))
+            temp_f.write("\n".join(samples))
             temp_f.flush()
-            result = runner.invoke(cohorts_link_cmd, ["NEW", temp_f.name])
+            result = runner.invoke(cohorts_link_cmd, ["new", temp_f.name])
 
         try:
             self.assertEqual(result.exit_code, 0)
-            new_crams = list(new_crams)
-            expected_output = "Added 2 samples to cohort , skipped 2 existing."
+            expected_output = "Added 2 samples to cohort new, skipped 0 existing."
             self.assertEqual(result.output, expected_output)
         except:
             print(result.output)
