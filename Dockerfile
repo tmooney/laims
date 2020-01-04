@@ -15,6 +15,7 @@ ARG laims_config=/gscmnt/gc2802/halllab/ccdg_resources/laims/prod.json
 RUN apt-get update -qq && \
     apt-get -y install --no-install-recommends \
         apt-transport-https \
+        git \
         libnss-sss \
         rsync \
         vim
