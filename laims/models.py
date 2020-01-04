@@ -32,6 +32,7 @@ class ComputeWorkflowSample(Base):
     ingest_date = Column(DateTime, default=datetime.datetime.utcnow)
 
     cohorts = relationship("SampleCohort", back_populates="sample")
+    files = relationship("SampleFile", back_populates="sample")
     metrics = relationship("SampleMetric", back_populates="sample")
 
 #-- ComputeWorkflowSample
@@ -45,7 +46,26 @@ class SampleCohort(Base):
 
     sample = relationship("ComputeWorkflowSample", back_populates="cohorts")
 
-#-- SampleMetric
+#-- SampleCohort
+
+class SampleFile(Base):
+
+    __tablename__ = 'sample_files'
+    __table_args__ = (
+        UniqueConstraint(
+            'sample_id',
+            'name',
+            name='uniq_file',
+        ),
+    )
+
+    sample_id = Column(Integer, ForeignKey("csp_sample.id"), primary_key=True)
+    name = Column(Text, primary_key=True)
+    value = Column(Text)
+
+    sample = relationship("ComputeWorkflowSample", back_populates="files")
+
+#-- SampleFile
 
 class SampleMetric(Base):
 
@@ -65,4 +85,3 @@ class SampleMetric(Base):
     sample = relationship("ComputeWorkflowSample", back_populates="metrics")
 
 #-- SampleMetric
-

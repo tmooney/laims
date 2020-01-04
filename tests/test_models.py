@@ -1,7 +1,7 @@
 import os, shutil, tempfile, unittest
 
 from laims.app import LaimsApp
-from laims.models import ComputeWorkflowSample, SampleCohort, SampleMetric
+from laims.models import ComputeWorkflowSample, SampleCohort, SampleFile, SampleMetric
 
 class LaimsModelsTest(unittest.TestCase):
     def setUp(self):
@@ -17,13 +17,13 @@ class LaimsModelsTest(unittest.TestCase):
     def tearDown(self):
         self.temp_d.cleanup()
 
-    def test1_sample(self):
+    def test_sample(self):
         sm = LaimsApp().db_connection()
         session = sm()
         sample = session.query(ComputeWorkflowSample).get(8)
         self.assertIsNotNone(sample)
 
-    def test2_sample_cohort(self):
+    def test_sample_cohort(self):
         sm = LaimsApp().db_connection()
         session = sm()
         cohorts = session.query(SampleCohort).filter_by(sample_id=8).all()
@@ -32,7 +32,16 @@ class LaimsModelsTest(unittest.TestCase):
         self.assertEqual(sample.ingest_sample_name, "H_XY-BGM1073006")
         self.assertEqual(sample.ingest_sample_name, cohorts[0].sample.ingest_sample_name)
 
-    def test3_sample_metric(self):
+    def test_sample_file(self):
+        sm = LaimsApp().db_connection()
+        session = sm()
+        files = session.query(SampleFile).filter_by(sample_id=8).all()
+        self.assertEqual(len(files), 2)
+        sample = files[0].sample
+        self.assertEqual(sample.ingest_sample_name, "H_XY-BGM1073006")
+        self.assertEqual(sample.ingest_sample_name, files[0].sample.ingest_sample_name)
+
+    def test_sample_metric(self):
         sm = LaimsApp().db_connection()
         session = sm()
         metrics = session.query(SampleMetric).filter_by(sample_id=8).all()
