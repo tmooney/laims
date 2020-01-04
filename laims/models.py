@@ -58,9 +58,8 @@ class SampleMetric(Base):
         ),
     )
 
-    id = Column(Integer, primary_key=True)
-    sample_id = Column(Integer, ForeignKey("csp_sample.id"))
-    name = Column(Text)
+    sample_id = Column(Integer, ForeignKey("csp_sample.id"), primary_key=True)
+    name = Column(Text, primary_key=True)
     value = Column(Text)
 
     sample = relationship("ComputeWorkflowSample", back_populates="metrics")

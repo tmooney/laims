@@ -38,6 +38,10 @@ def sample_list_cmd(filter_by):
     sys.stdout.write( tabulate.tabulate(rows, ["ID", "NAME", "WORK_ORDER"], tablefmt="simple") )
 laims_sample_cli.add_command(sample_list_cmd, name="list")
 
+# [metrics]
+from laims.metrics_cli import laims_metrics_cli
+laims_sample_cli.add_command(laims_metrics_cli, name="metrics")
+
 # [update-files]
 @click.command()
 @click.argument("file_type", type=click.Choice(["cram", "gvcf"]))
