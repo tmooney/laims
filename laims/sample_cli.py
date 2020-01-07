@@ -42,9 +42,9 @@ def sample_list_cmd(filter_by):
 laims_sample_cli.add_command(sample_list_cmd, name="list")
 
 # [metrics]
-from laims.metrics_cli import laims_metrics_cli
+from laims.sample_metrics import laims_metrics_cli
 laims_sample_cli.add_command(laims_metrics_cli, name="metrics")
 
 # [files]
-from laims.sample_files_cli import files_cli
+from laims.sample_files import files_cli
 laims_sample_cli.add_command(files_cli, name="files")

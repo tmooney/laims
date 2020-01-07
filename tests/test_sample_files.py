@@ -4,7 +4,7 @@ from sqlalchemy import update
 
 from laims.app import LaimsApp
 from laims.models import ComputeWorkflowSample, SampleFile
-from laims.sample_files_cli import files_cli, update_cmd
+from laims.sample_files import files_cli, update_cmd
 
 class LaimsCohortsCliTest(unittest.TestCase):
     def setUp(self):
