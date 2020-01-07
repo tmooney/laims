@@ -47,12 +47,13 @@ def update_cmd(fof, key):
                     sys.stderr.write("INVALID_KEY {} {}\n".format(_key, fn))
                     continue
 
-            sample_file = session.query(SampleFile).get((sample.id, key))
+            sample_file = session.query(SampleFile).get((sample.id, _key))
             if sample_file is not None:
                 sample_file.value = fn
             else:
-                sample_file = SampleFile(sample.id, name=key, value=fn)
+                #sample_file = SampleFile(sample.id, key, fn)
+                sample_file = SampleFile(sample_id=sample.id, name=_key, value=fn)
             session.add(sample_file)
-            sys.stderr.write("OK {} {} {}\n".format(sample_n, _key, fn))
+            sys.stderr.write("OK {} {} {}\n".format(sample_name, _key, fn))
     session.commit()
 files_cli.add_command(update_cmd, name="update")

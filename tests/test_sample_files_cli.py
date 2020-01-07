@@ -48,9 +48,9 @@ class LaimsCohortsCliTest(unittest.TestCase):
         try:
             self.assertEqual(result.exit_code, 0)
             new_crams = list(new_crams)
-            expected_output = [ " ".join([samples[0], new_crams[0]]) ]
-            expected_output += [ " ".join([samples[1], new_crams[1]]) ]
-            expected_output += [ " ".join([samples[2], "NOT_FOUND"]) ]
+            expected_output = [ " ".join(["OK", samples[0], "cram", new_crams[0]]) ]
+            expected_output += [ " ".join(["OK", samples[1], "cram", new_crams[1]]) ]
+            expected_output += [ " ".join(["NO_SAMPLE", samples[2]]) ]
             expected_output += [""]
             self.assertEqual(result.output, "\n".join(expected_output))
         except:
