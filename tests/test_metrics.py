@@ -10,7 +10,7 @@ class LaimsModelsTest(unittest.TestCase):
         self.assertEqual(QcMetrics.verifyBamID_bn(), "verify_bam_id.selfSM")
         self.assertEqual(QcMetrics.verifyBamID_GT_bn(), "GT_verify_bam_id.selfSM")
 
-        qc = QcMetrics(qc_dn = self.data_dn)
+        qc = QcMetrics(dn = self.data_dn)
         self.assertEqual(qc.verifyBamID_fn(), os.path.join(self.data_dn, "verify_bam_id.selfSM"))
 
         expected_metrics = {
@@ -40,7 +40,7 @@ class LaimsModelsTest(unittest.TestCase):
     def test_picard_wgs(self):
         self.assertEqual(QcMetrics.picard_wgs_bn(), "wgs_metric_summary.txt")
 
-        qc = QcMetrics(qc_dn = self.data_dn)
+        qc = QcMetrics(dn = self.data_dn)
         self.assertEqual(qc.picard_wgs_fn(), os.path.join(self.data_dn, "wgs_metric_summary.txt"))
 
         expected_metrics = {

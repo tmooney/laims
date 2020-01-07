@@ -46,7 +46,11 @@ class LaimsCohortsCliTest(unittest.TestCase):
         result = runner.invoke(metrics_add_cmd)
         try:
             self.assertEqual(result.exit_code, 0)
-            expected_output = """NAME 
+            expected_output = """STATUS:
+NO_DIR: 0
+NO_PICARD_WGS: 0
+NO_VERIFY_BAMID: 0
+OK: 10
 """
             self.assertEqual(result.output, expected_output)
         except:
