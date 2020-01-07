@@ -11,7 +11,7 @@ from laims.models import ComputeWorkflowSample
 @click.group()
 def laims_sample_cli():
     """
-    Commands and Helpers for Samples
+    Work with samples
     """
     pass
 
@@ -26,6 +26,9 @@ laims_sample_cli.add_command(laims_cohorts_cli, name="cohorts")
 @click.command()
 @click.option("--filter-by", "-f", required=False, help="Filter samples by workorder.")
 def sample_list_cmd(filter_by):
+    """
+    List samples and show their attributes
+    """
     sm = LaimsApp().db_connection()
     session = sm()
     if filter_by is not None:
@@ -42,28 +45,6 @@ laims_sample_cli.add_command(sample_list_cmd, name="list")
 from laims.metrics_cli import laims_metrics_cli
 laims_sample_cli.add_command(laims_metrics_cli, name="metrics")
 
-# [update-files]
-@click.command()
-@click.argument("file_type", type=click.Choice(["cram", "gvcf"]))
-@click.argument("fof")
-def sample_update_files_cmd(file_type, fof):
-    """
-    Update Samples Files
-
-    Give a file type, and an FOF of files to update. The sample name should be derivable from the filename.
-    """
-    attr = "_".join(["analysis", file_type, "path"])
-    sm = LaimsApp().db_connection()
-    session = sm()
-    with open(fof, "r") as f:
-        for fn in f.readlines():
-            sample_n = os.path.basename(fn).split(".")[0]
-            sample = session.query(ComputeWorkflowSample).filter_by(ingest_sample_name=sample_n).first()
-            if sample is None:
-                status = "NOT_FOUND"
-            else:
-                setattr(sample, attr, fn.rstrip())
-                status = getattr(sample, attr)
-            sys.stderr.write("{} {}\n".format(sample_n, status))
-    session.commit()
-laims_sample_cli.add_command(sample_update_files_cmd, name="update-files")
+# [files]
+from laims.sample_files_cli import files_cli
+laims_sample_cli.add_command(files_cli, name="files")

@@ -12,7 +12,7 @@ from laims.models import ComputeWorkflowSample, SampleCohort
 @click.group()
 def laims_cohorts_cli():
     """
-    Commands and Helpers for Sample Cohorts
+    Work with sample cohorts
     """
     pass
 

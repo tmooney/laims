@@ -4,76 +4,55 @@ from laims.app import LaimsApp
 from laims.models import ComputeWorkflowSample, SampleFile
 
 # SAMPLE FILE
-# add
-# list
 # update
 
 @click.group()
-def laims_files_cli():
+def files_cli():
     """
-    Commands and Helpers for Samples
+    Work with samples' files
     """
     pass
 
-# [add]
-@click.command()
-@click.argument("sample", type=str)
-@click.argument("name", type=str, type=click.Choice(["cram", "gvcf"]) # FIXME add cloud
-@click.argument("value", type=str)
-def file_add_cmd(sample, name, value):
-    """
-    Add (or update) a single sample's file.
-    """
-    sm = LaimsApp().db_connection()
-    session = sm()
-    sample_file = session.query(SampleFile).get((sample.id, name))
-    if sample_file is None:
-        sample_file = SampleFile(sample_id=sample.id, name=name_l, value=metrics[name])
-        elif metrics[name] != metric.value:
-            setattr(metric, name_l, metrics[name])
-        session.add(metric)
-    session.commit()
-    print("add")
-
-# [list]
-@click.command()
-@click.option("filters", nargs=-1)
-def sample_list_cmd(filters):
-    sm = LaimsApp().db_connection()
-    session = sm()
-    if filter_by is not None:
-        query = session.query(ComputeWorkflowSample).filter_by(source_work_order=filter_by)
-    else:
-        sample_iter = session.query(ComputeWorkflowSample)
-    rows = []
-    for sample in sample_iter:
-        rows += [map(str, [sample.id, sample.ingest_sample_name, sample.source_work_order])]
-    sys.stdout.write( tabulate.tabulate(rows, ["ID", "NAME", "WORK_ORDER"], tablefmt="simple") )
-laims_sample_cli.add_command(sample_list_cmd, name="list")
+valid_keys = ["cram", "gvcf"]
 
 # [update]
 @click.command()
-@click.argument("sample")
-@click.argument("name")
-@click.argument("value")
-def sample_update_files_cmd(file_type, fof):
+@click.argument("fof")
+@click.option("--key", "-k", type=click.Choice(valid_keys), help="Use this as the sample file key instead of deriving it from the file's extension.")
+def update_cmd(fof, key):
     """
     Update Samples Files
 
-    Give a file type, and an FOF of files to update. The sample name should be derivable from the filename.
+    Give an FOF of files to update. The sample name should be derivable from the filename. It not giving the --key option, the extension will be used as the file's key.
     """
-    attr = "_".join(["analysis", file_type, "path"])
     sm = LaimsApp().db_connection()
     session = sm()
     with open(fof, "r") as f:
         for fn in f.readlines():
-            sample_n = os.path.basename(fn).split(".")[0]
-            sample = session.query(ComputeWorkflowSample).filter_by(ingest_sample_name=sample_n).first()
+            fn = fn.rstrip()
+            bn = os.path.basename(fn)
+            tokens =  bn.split(".")
+
+            sample_name = tokens[0]
+            sample = session.query(ComputeWorkflowSample).filter_by(ingest_sample_name=sample_name).first()
+
             if sample is None:
-                status = "NOT_FOUND"
+                sys.stderr.write("NO_SAMPLE {}\n".format(sample_name, fn))
+                continue
+
+            _key = key
+            if _key is None:
+                _key = tokens[-1]
+                if not _key in valid_keys:
+                    sys.stderr.write("INVALID_KEY {} {}\n".format(_key, fn))
+                    continue
+
+            sample_file = session.query(SampleFile).get((sample.id, key))
+            if sample_file is not None:
+                sample_file.value = fn
             else:
-                setattr(sample, attr, fn.rstrip())
-                status = getattr(sample, attr)
-            sys.stderr.write("{} {}\n".format(sample_n, status))
+                sample_file = SampleFile(sample.id, name=key, value=fn)
+            session.add(sample_file)
+            sys.stderr.write("OK {} {} {}\n".format(sample_n, _key, fn))
     session.commit()
-laims_sample_cli.add_command(sample_update_files_cmd, name="update-files")
+files_cli.add_command(update_cmd, name="update")
