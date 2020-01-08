@@ -1,0 +1,62 @@
+include required(classpath("application"))
+
+backend {
+  default = "LSF"
+  providers {
+    LSF {
+      actor-factory = "cromwell.backend.impl.sfs.config.ConfigBackendLifecycleActorFactory"
+      config {
+        runtime-attributes = """
+        Int cpu = 1
+        Int memory_kb = 4096000
+        Int memory_mb = 4096
+        String? docker
+        """
+
+        submit = """
+        LSF_DOCKER_PRESERVE_ENVIRONMENT=false \
+        bsub \
+        -J ${job_name} \
+        -cwd ${cwd} \
+        -o /dev/null \
+        -e {{log_dir}}/logs/cromwell-%J.err \
+        -q {{lsf_queue}} \
+        -g '{{lsf_job_group}}' \
+        -a 'docker(registry.gsc.wustl.edu/apipe-builder/genome_perl_environment:23)' \
+        -M ${memory_kb} \
+        -n ${cpu} \
+        -R "span[hosts=1] select[mem>${memory_mb}] rusage[mem=${memory_mb}]" \
+        /bin/bash ${script}
+        """
+
+        submit-docker = """
+        LSF_DOCKER_VOLUMES=${cwd}:${docker_cwd} \
+        LSF_DOCKER_PRESERVE_ENVIRONMENT=false \
+        bsub \
+        -J ${job_name} \
+        -cwd ${cwd} \
+        -o /dev/null \
+        -e {{log_dir}}/logs/cromwell-%J.err \
+        -q {{lsf_queue}} \
+        -g '{{lsf_job_group}}' \
+        -a "docker(${docker})" \
+        -M ${memory_kb} \
+        -n ${cpu} \
+        -R "span[hosts=1] select[mem>${memory_mb}] rusage[mem=${memory_mb}]" \
+        /bin/bash ${script}
+        """
+
+        kill = "bkill ${job_id}"
+        docker-kill = "bkill ${job_id}"
+        check-alive = "bjobs -noheader -o stat ${job_id} | /bin/grep 'PEND\\|RUN'"
+        job-id-regex = "Job <(\\d+)>.*"
+        root = "{{output_dir}}/cromwell-executions"
+      }
+    }
+  }
+}
+workflow-options {
+  final_workflow_outputs_dir = "{{output_dir}}/results"
+  use_relative_output_paths = true
+  workflow-log-dir = "{{log_dir}}/cromwell-workflow-logs"
+}
